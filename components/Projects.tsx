@@ -13,7 +13,7 @@ const initials = (title: string) =>
 function ProjectLogo({ project }: { project: Project }) {
   if (project.logo) {
     return (
-      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-white sm:h-16 sm:w-16 shadow-lg shadow-black/30 ring-1 ring-white/10">
+      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-white sm:h-16 sm:w-16 shadow-lg shadow-black/30 ring-1 ring-foreground/10">
         <Image
           src={project.logo}
           alt={`${project.title} logo`}
@@ -26,7 +26,7 @@ function ProjectLogo({ project }: { project: Project }) {
   }
   return (
     <div
-      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-lg sm:h-16 sm:w-16 sm:text-xl font-semibold text-white shadow-lg shadow-black/30 ring-1 ring-white/10"
+      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-lg sm:h-16 sm:w-16 sm:text-xl font-semibold text-white shadow-lg shadow-black/30 ring-1 ring-foreground/10"
       style={{ background: `linear-gradient(135deg, ${project.color}, ${project.color}99)` }}
       aria-hidden
     >
@@ -50,7 +50,7 @@ export default function Projects() {
       <div className="grid gap-6 md:grid-cols-2">
         {site.projects.map((project, i) => (
           <Reveal key={project.title} delay={(i % 2) * 0.1} className="h-full">
-            <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white/[0.02] p-5 transition duration-300 hover:-translate-y-1 hover:border-white/15 min-[400px]:p-7 sm:p-8">
+            <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-surface p-5 transition duration-300 hover:-translate-y-1 hover:border-foreground/15 min-[400px]:p-7 sm:p-8">
               {/* Brand-colored glow, brighter on hover */}
               <div
                 aria-hidden
@@ -101,7 +101,7 @@ export default function Projects() {
                   {project.tags.map((tag) => (
                     <li
                       key={tag}
-                      className="rounded-full bg-white/5 px-2.5 py-1 font-mono text-xs text-muted transition group-hover:text-foreground"
+                      className="rounded-full bg-foreground/5 px-2.5 py-1 font-mono text-xs text-muted transition group-hover:text-foreground"
                     >
                       {tag}
                     </li>

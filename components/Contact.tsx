@@ -30,7 +30,7 @@ function ChannelRow({
       <a
         href={href}
         {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-        className="group flex items-center gap-3 px-4 py-4 transition hover:bg-white/[0.04] active:bg-white/[0.06] min-[400px]:gap-4 sm:px-5"
+        className="group flex items-center gap-3 px-4 py-4 transition hover:bg-foreground/[0.04] active:bg-foreground/[0.06] min-[400px]:gap-4 sm:px-5"
       >
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-muted transition group-hover:border-accent/50 group-hover:text-foreground">
           {icon}
@@ -56,7 +56,7 @@ export default function Contact() {
   return (
     <section id="contact" className="mx-auto max-w-6xl px-6 py-20 sm:py-28 lg:py-32">
       <Reveal>
-        <div className="relative overflow-hidden rounded-3xl border border-line bg-white/[0.02]">
+        <div className="relative overflow-hidden rounded-3xl border border-line bg-surface">
           {/* Background glow */}
           <div aria-hidden className="pointer-events-none absolute -top-40 -left-40 h-72 w-72 sm:h-96 sm:w-96 rounded-full bg-accent/20 blur-3xl" />
           <div aria-hidden className="pointer-events-none absolute -right-32 -bottom-40 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
@@ -77,7 +77,7 @@ export default function Contact() {
               <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
                 <a
                   href={`mailto:${site.email}`}
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition hover:bg-accent hover:text-foreground active:bg-accent active:text-foreground"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition hover:bg-accent active:bg-accent"
                 >
                   <MailIcon />
                   Email me

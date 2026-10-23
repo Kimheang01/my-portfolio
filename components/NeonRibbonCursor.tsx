@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { accentById } from "@/lib/theme";
+import { getTheme, subscribeTheme } from "@/lib/use-theme";
 
 // How long a point of the trail lives before it has fully faded (ms).
 const LIFETIME = 900;
@@ -12,13 +14,6 @@ const FOLLOW = 0.45;
 // Upper bound on stored points, so a very long fast swipe stays cheap.
 const MAX_POINTS = 160;
 
-// Cyan → Electric Blue → Violet, from the head to the tail.
-const GRADIENT: [number, number, number][] = [
-  [34, 211, 238],
-  [59, 130, 246],
-  [139, 92, 246],
-];
-
 // Each pass strokes the whole ribbon once: wide and faint for the outer glow,
 // narrow and bright for the inner line. Alphas sum to roughly 40% glow.
 const PASSES = [
@@ -29,13 +24,19 @@ const PASSES = [
 ];
 
 type Point = { x: number; y: number; t: number };
+type RGB = [number, number, number];
 
-/** Color along the ribbon: 0 = head (cyan) … 1 = tail (violet). */
-function colorAt(position: number, white: number) {
-  const scaled = position * (GRADIENT.length - 1);
-  const i = Math.min(Math.floor(scaled), GRADIENT.length - 2);
+const hexToRgb = (hex: string): RGB => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)) as RGB;
+
+/** The current accent's trail colors, head to tail (see lib/theme.ts). */
+const themeGradient = () => accentById(getTheme().accent).trail.map(hexToRgb);
+
+/** Color along the ribbon: 0 = head … 1 = tail. */
+function colorAt(gradient: RGB[], position: number, white: number) {
+  const scaled = position * (gradient.length - 1);
+  const i = Math.min(Math.floor(scaled), gradient.length - 2);
   const f = scaled - i;
-  const [a, b] = [GRADIENT[i], GRADIENT[i + 1]];
+  const [a, b] = [gradient[i], gradient[i + 1]];
   return a.map((c, k) => {
     const mixed = c + (b[k] - c) * f;
     return Math.round(mixed + (255 - mixed) * white);
@@ -67,6 +68,18 @@ export default function NeonRibbonCursor() {
     let width = 0;
     let height = 0;
     let enabled = false;
+    let gradient = themeGradient();
+    // On the light theme the glow can't brighten the page ("screen"/"lighter"
+    // would turn it white), so it is painted as plain color instead.
+    let light = false;
+
+    const applyTheme = () => {
+      gradient = themeGradient();
+      light = getTheme().resolved === "light";
+      canvas.style.mixBlendMode = light ? "normal" : "screen";
+    };
+    applyTheme();
+    const unsubscribeTheme = subscribeTheme(applyTheme);
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -82,7 +95,7 @@ export default function NeonRibbonCursor() {
       const n = points.length;
       if (n < 2) return;
 
-      ctx.globalCompositeOperation = "lighter";
+      ctx.globalCompositeOperation = light ? "source-over" : "lighter";
       ctx.lineJoin = "round";
 
       for (const pass of PASSES) {
@@ -96,7 +109,7 @@ export default function NeonRibbonCursor() {
           const strength = Math.max(0, life) * along;
           if (strength < 0.01) continue;
 
-          const [r, g, b] = colorAt(1 - along, pass.white);
+          const [r, g, b] = colorAt(gradient, 1 - along, light ? 0 : pass.white);
           ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${pass.alpha * strength})`;
           ctx.lineWidth = (TAIL_WIDTH + (HEAD_WIDTH - TAIL_WIDTH) * along) * pass.width * (0.5 + 0.5 * life);
 
@@ -187,6 +200,7 @@ export default function NeonRibbonCursor() {
     return () => {
       finePointer.removeEventListener("change", update);
       reducedMotion.removeEventListener("change", update);
+      unsubscribeTheme();
       disable();
     };
   }, []);
@@ -195,7 +209,7 @@ export default function NeonRibbonCursor() {
     <canvas
       ref={canvasRef}
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-[60] h-full w-full mix-blend-screen"
+      className="pointer-events-none fixed inset-0 z-[60] h-full w-full"
     />
   );
 }
