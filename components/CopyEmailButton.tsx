@@ -24,7 +24,7 @@ export default function CopyEmailButton({ email }: { email: string }) {
     <button
       type="button"
       onClick={copy}
-      className="inline-flex items-center gap-2 rounded-full border border-line px-6 py-3 text-sm font-medium transition hover:border-foreground"
+      className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-line px-6 py-3 text-sm font-medium transition hover:border-foreground active:bg-white/10"
     >
       {copied ? (
         <>

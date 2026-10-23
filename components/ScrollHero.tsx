@@ -83,6 +83,13 @@ export default function ScrollHero() {
     resize();
     window.addEventListener("resize", resize);
 
+    // Phones and tablets get a shorter scroll and no blur: blurring many
+    // layers every frame is costly on mobile GPUs. Reduced motion skips the
+    // entrance and the blur; the frames still follow the scroll.
+    const touch = window.matchMedia("(pointer: coarse)").matches;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const blur = (px: number) => (touch || reduced ? "blur(0px)" : `blur(${px}px)`);
+
     const css = getComputedStyle(document.documentElement);
     const muted = css.getPropertyValue("--muted").trim();
     const foreground = css.getPropertyValue("--foreground").trim();
@@ -90,23 +97,25 @@ export default function ScrollHero() {
     const gsapCtx = gsap.context(() => {
       // Entrance: the inner wrappers blur in from the sides. The outer
       // wrappers are left free for the scroll timeline below.
-      gsap
-        .timeline({ delay: 0.2, defaults: { ease: "power3.out" } })
-        .from(headlineInnerRef.current, {
-          autoAlpha: 0,
-          x: -80,
-          y: 30,
-          filter: "blur(14px)",
-          duration: 1,
-        })
-        .from(
-          introInnerRef.current,
-          { autoAlpha: 0, x: 80, y: 30, filter: "blur(14px)", duration: 1 },
-          "-=0.7",
-        );
+      if (!reduced) {
+        gsap
+          .timeline({ delay: 0.2, defaults: { ease: "power3.out" } })
+          .from(headlineInnerRef.current, {
+            autoAlpha: 0,
+            x: -80,
+            y: 30,
+            filter: blur(14),
+            duration: 1,
+          })
+          .from(
+            introInnerRef.current,
+            { autoAlpha: 0, x: 80, y: 30, filter: blur(14), duration: 1 },
+            "-=0.7",
+          );
+      }
 
-      gsap.set(helloRef.current, { autoAlpha: 0, filter: "blur(18px)" });
-      gsap.set(".hero-word", { opacity: 0.15, filter: "blur(8px)", color: muted });
+      gsap.set(helloRef.current, { autoAlpha: 0, filter: blur(18) });
+      gsap.set(".hero-word", { opacity: 0.15, filter: blur(8), color: muted });
       gsap.set(buttonRef.current, { autoAlpha: 0, y: 30 });
 
       gsap
@@ -114,7 +123,11 @@ export default function ScrollHero() {
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: "+=400%",
+            // How far you scroll while the hero is pinned (100% = one screen).
+            // Re-measured whenever the window is resized.
+            end: () =>
+              window.innerWidth < 768 ? "+=100%" : window.innerWidth < 1024 ? "+=250%" : "+=400%",
+            invalidateOnRefresh: true,
             pin: true,
             scrub: 0.5,
           },
@@ -132,24 +145,24 @@ export default function ScrollHero() {
         .to(hintRef.current, { autoAlpha: 0, duration: 0.05 }, 0)
         .to(
           headlineRef.current,
-          { autoAlpha: 0, x: -180, y: -40, scale: 0.9, filter: "blur(14px)", ease: "none", duration: 0.2 },
+          { autoAlpha: 0, x: -180, y: -40, scale: 0.9, filter: blur(14), ease: "none", duration: 0.2 },
           0.08,
         )
         .to(
           introRef.current,
-          { autoAlpha: 0, x: 180, y: -30, scale: 0.92, filter: "blur(14px)", ease: "none", duration: 0.2 },
+          { autoAlpha: 0, x: 180, y: -30, scale: 0.92, filter: blur(14), ease: "none", duration: 0.2 },
           0.08,
         )
         .to(
           helloRef.current,
-          { autoAlpha: 1, filter: "blur(0px)", ease: "none", duration: 0.15 },
+          { autoAlpha: 1, filter: blur(0), ease: "none", duration: 0.15 },
           0.4,
         )
         .to(
           ".hero-word",
           {
             opacity: 1,
-            filter: "blur(0px)",
+            filter: blur(0),
             color: foreground,
             ease: "none",
             duration: 0.08,
@@ -189,10 +202,10 @@ export default function ScrollHero() {
       {/* Left: rotating role headline */}
       <div
         ref={headlineRef}
-        className="absolute top-28 left-6 sm:top-36 lg:top-44 lg:left-16"
+        className="absolute top-24 left-6 min-[400px]:top-28 sm:top-36 short:top-20 lg:top-44 lg:left-16"
       >
         <div ref={headlineInnerRef} aria-hidden>
-          <div className="relative h-[110px] w-[calc(100vw-48px)] max-w-[620px] text-[52px] leading-[0.85] font-semibold tracking-[-0.05em] sm:h-[150px] sm:text-[72px] lg:h-[180px] lg:text-[88px]">
+          <div className="relative h-[2.05em] w-[calc(100vw-48px)] max-w-[620px] text-display leading-[0.85] font-semibold tracking-[-0.05em] short:text-5xl short:leading-[0.85]">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={role}
@@ -223,16 +236,16 @@ export default function ScrollHero() {
       {/* Right: introduction */}
       <div
         ref={introRef}
-        className="absolute top-[300px] right-6 left-6 max-w-[420px] sm:top-[340px] md:top-60 md:right-8 md:left-auto md:max-w-[330px] lg:top-52 lg:right-20 lg:max-w-[360px]"
+        className="absolute right-6 bottom-24 left-6 max-w-[420px] short:hidden md:top-60 md:right-8 md:bottom-auto md:left-auto md:max-w-[330px] lg:top-52 lg:right-20 lg:max-w-[360px]"
       >
         <div ref={introInnerRef}>
-          <p className="mb-4 text-xs text-muted italic lg:mb-6 lg:text-sm">
+          <p className="mb-3 text-xs text-muted italic md:mb-4 lg:mb-6 lg:text-sm">
             ~ Introduction
           </p>
-          <h2 className="mb-4 text-2xl leading-tight font-medium sm:text-[28px] lg:mb-6 lg:text-3xl">
+          <h2 className="mb-3 text-intro leading-tight font-medium md:mb-4 lg:mb-6">
             {site.intro.heading}
           </h2>
-          <p className="text-sm leading-7 text-muted lg:text-[15px] lg:leading-8">
+          <p className="text-sm leading-6 text-muted min-[400px]:leading-7 lg:text-[15px] lg:leading-8">
             {site.intro.text}
           </p>
         </div>
@@ -241,15 +254,15 @@ export default function ScrollHero() {
       {/* Bottom left: revealed while scrolling */}
       <div
         ref={helloRef}
-        className="invisible absolute right-6 bottom-8 left-6 max-w-[680px] opacity-0 md:right-auto md:bottom-12 lg:bottom-16 lg:left-16"
+        className="invisible absolute right-6 bottom-8 left-6 max-w-[680px] opacity-0 short:bottom-5 md:right-auto md:bottom-12 lg:bottom-16 lg:left-16"
       >
-        <p className="text-4xl font-light tracking-[0.18em] uppercase sm:text-5xl md:text-6xl md:tracking-[0.24em] lg:text-7xl lg:tracking-[0.3em]">
+        <p className="text-hello font-light tracking-[0.18em] uppercase short:text-3xl md:tracking-[0.24em] lg:tracking-[0.3em]">
           Hello
         </p>
-        <p className="mb-4 text-2xl leading-tight text-accent uppercase sm:text-3xl md:mb-6 md:text-4xl">
+        <p className="mb-4 text-name leading-tight text-accent uppercase short:mb-2 short:text-xl md:mb-6">
           I&apos;m {site.name}
         </p>
-        <p className="mb-6 max-w-xl text-sm leading-7 md:mb-8 md:text-[15px] md:leading-8">
+        <p className="mb-6 max-w-xl text-sm leading-7 short:mb-3 short:leading-6 md:mb-8 md:text-[15px] md:leading-8">
           {site.heroStatement.split(" ").map((word, i) => (
             <span key={i} className="hero-word mr-[0.3em] inline-block">
               {word}
@@ -259,7 +272,7 @@ export default function ScrollHero() {
         <a
           ref={buttonRef}
           href="#experience"
-          className="group inline-flex items-center gap-3 rounded-full border border-accent/40 bg-accent/10 px-6 py-3 text-sm font-medium transition hover:border-accent hover:bg-accent/20"
+          className="group inline-flex min-h-11 items-center gap-3 rounded-full border border-accent/40 bg-accent/10 px-6 py-3 text-sm font-medium transition hover:border-accent hover:bg-accent/20 active:bg-accent/25 short:py-2"
         >
           View Experience
           <span className="transition-transform group-hover:translate-x-1">→</span>
@@ -268,10 +281,10 @@ export default function ScrollHero() {
 
       <div
         ref={hintRef}
-        className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 font-mono text-xs tracking-widest text-muted uppercase"
+        className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 font-mono text-xs tracking-widest text-muted uppercase short:hidden md:bottom-8"
       >
         Scroll
-        <span className="h-10 w-px animate-pulse bg-muted" />
+        <span className="h-8 w-px animate-pulse bg-muted md:h-10" />
       </div>
     </section>
   );

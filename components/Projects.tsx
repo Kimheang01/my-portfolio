@@ -13,7 +13,7 @@ const initials = (title: string) =>
 function ProjectLogo({ project }: { project: Project }) {
   if (project.logo) {
     return (
-      <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-white shadow-lg shadow-black/30 ring-1 ring-white/10">
+      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-white sm:h-16 sm:w-16 shadow-lg shadow-black/30 ring-1 ring-white/10">
         <Image
           src={project.logo}
           alt={`${project.title} logo`}
@@ -26,7 +26,7 @@ function ProjectLogo({ project }: { project: Project }) {
   }
   return (
     <div
-      className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-xl font-semibold text-white shadow-lg shadow-black/30 ring-1 ring-white/10"
+      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-lg sm:h-16 sm:w-16 sm:text-xl font-semibold text-white shadow-lg shadow-black/30 ring-1 ring-white/10"
       style={{ background: `linear-gradient(135deg, ${project.color}, ${project.color}99)` }}
       aria-hidden
     >
@@ -37,11 +37,11 @@ function ProjectLogo({ project }: { project: Project }) {
 
 export default function Projects() {
   return (
-    <section id="projects" className="mx-auto max-w-6xl px-6 py-32">
-      <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+    <section id="projects" className="mx-auto max-w-6xl px-6 py-20 sm:py-28 lg:py-32">
+      <div className="mb-10 flex flex-col gap-5 sm:mb-12 md:flex-row md:items-end md:justify-between md:gap-6">
         <SectionHeading eyebrow="Projects" title="Selected work" className="" />
         <Reveal delay={0.05}>
-          <p className="max-w-sm leading-relaxed text-muted md:text-right">
+          <p className="max-w-sm text-body text-muted md:text-right">
             {site.projectsIntro}
           </p>
         </Reveal>
@@ -50,7 +50,7 @@ export default function Projects() {
       <div className="grid gap-6 md:grid-cols-2">
         {site.projects.map((project, i) => (
           <Reveal key={project.title} delay={(i % 2) * 0.1} className="h-full">
-            <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white/[0.02] p-7 transition duration-300 hover:-translate-y-1 hover:border-white/15 sm:p-8">
+            <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white/[0.02] p-5 transition duration-300 hover:-translate-y-1 hover:border-white/15 min-[400px]:p-7 sm:p-8">
               {/* Brand-colored glow, brighter on hover */}
               <div
                 aria-hidden
@@ -69,18 +69,18 @@ export default function Projects() {
 
               <div className="relative flex items-start justify-between gap-4">
                 <ProjectLogo project={project} />
-                <span className="rounded-full border border-line bg-background/40 px-3 py-1 text-xs text-muted backdrop-blur">
+                <span className="rounded-full border border-line bg-background/40 px-3 py-1 text-center text-xs text-muted backdrop-blur">
                   {project.type}
                 </span>
               </div>
 
-              <p className="relative mt-8 font-mono text-xs tracking-widest text-muted uppercase">
+              <p className="relative mt-6 font-mono text-xs tracking-widest text-muted uppercase sm:mt-8">
                 {project.context}
               </p>
-              <h3 className="relative mt-2 text-2xl font-semibold tracking-tight">
+              <h3 className="relative mt-2 text-card font-semibold tracking-tight">
                 {project.title}
               </h3>
-              <p className="relative mt-3 leading-relaxed text-muted">
+              <p className="relative mt-3 text-body text-muted">
                 {project.description}
               </p>
 
@@ -108,14 +108,14 @@ export default function Projects() {
                   ))}
                 </ul>
                 {(project.href || project.repo) && (
-                  <div className="mt-5 flex gap-5 text-sm">
+                  <div className="mt-3 flex gap-5 text-sm">
                     {project.href && (
-                      <a href={project.href} target="_blank" rel="noreferrer" className="text-accent hover:underline">
+                      <a href={project.href} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center text-accent hover:underline">
                         Live site ↗
                       </a>
                     )}
                     {project.repo && (
-                      <a href={project.repo} target="_blank" rel="noreferrer" className="text-muted hover:text-foreground">
+                      <a href={project.repo} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center text-muted hover:text-foreground">
                         Source ↗
                       </a>
                     )}
