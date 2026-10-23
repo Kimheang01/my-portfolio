@@ -37,7 +37,6 @@ export const site = {
   tagline:
     "I build websites, REST APIs and iOS & Android apps, from PHP and MySQL to Vue.js, React Native and TypeScript.",
   location: "Phnom Penh, Cambodia",
-  dateOfBirth: "19 June 2003",
   email: "skimheang63@gmail.com",
   photo: "/images/profile-about.jpg",
   // Shown as icons in the footer and as links in the Contact section.

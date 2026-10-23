@@ -57,7 +57,6 @@ export default function About() {
   const [lead, ...rest] = site.about;
   const education = site.experience.find((item) => item.kind === "education");
   const facts = [
-    { label: "Born", value: site.dateOfBirth },
     { label: "Based in", value: site.location },
     education && { label: "Studied", value: `${education.title}, ${education.company}` },
     { label: "Languages", value: site.languages.join(" · ") },
