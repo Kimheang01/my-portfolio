@@ -7,20 +7,16 @@
   }
 }
 
-:root {
-  --background: #000000;
-  --foreground: #ededf0;
-  --muted: #9a9aa8;
-  --accent: #8b7cff;
-  --line: rgb(255 255 255 / 0.09);
-}
-
+/* The color variables (--background, --accent, …) are generated from
+   lib/theme.ts and set by the dark/light mode and the accent preset. */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-line: var(--line);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
@@ -65,6 +61,24 @@ body {
   color: var(--background);
 }
 
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Hero statement words brighten from muted to full color as you scroll;
+   the hero animates --lit from 0 to 1. */
+.hero-word {
+  color: color-mix(in oklab, var(--foreground) calc(var(--lit, 1) * 100%), var(--muted));
+}
+
+/* Switching theme cross-fades the page (in browsers with view transitions). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
+  animation-timing-function: ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -73,5 +87,11 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

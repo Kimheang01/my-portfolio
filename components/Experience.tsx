@@ -18,7 +18,7 @@ export default function Experience() {
           </Reveal>
           {current && (
             <Reveal delay={0.1}>
-              <div className="mt-6 inline-flex items-center gap-3 rounded-2xl sm:mt-8 border border-line bg-white/[0.02] px-4 py-3">
+              <div className="mt-6 inline-flex items-center gap-3 rounded-2xl sm:mt-8 border border-line bg-surface px-4 py-3">
                 <span className="relative flex h-2.5 w-2.5 shrink-0">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
@@ -43,12 +43,12 @@ export default function Experience() {
                 <span
                   className={`absolute top-7 left-0 h-[15px] w-[15px] sm:top-8 rounded-full border-2 ${
                     now
-                      ? "border-accent bg-accent shadow-[0_0_0_6px_rgb(139_124_255/0.15)]"
+                      ? "border-accent bg-accent ring-[6px] ring-accent/15"
                       : "border-accent/60 bg-background"
                   }`}
                 />
                 <Reveal delay={i * 0.06}>
-                  <article className="group rounded-2xl border border-line bg-white/[0.02] p-5 transition duration-300 hover:-translate-y-1 hover:border-accent/40 hover:bg-white/[0.04] min-[400px]:p-6 sm:p-8">
+                  <article className="group rounded-2xl border border-line bg-surface p-5 transition duration-300 hover:-translate-y-1 hover:border-accent/40 hover:bg-surface-hover min-[400px]:p-6 sm:p-8">
                     <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
                       <div>
                         <p className="font-mono text-xs tracking-widest text-accent uppercase">
@@ -86,7 +86,7 @@ export default function Experience() {
                         {job.tags.map((tag) => (
                           <li
                             key={tag}
-                            className="rounded-full bg-white/5 px-2.5 py-1 font-mono text-xs text-muted transition group-hover:text-foreground"
+                            className="rounded-full bg-foreground/5 px-2.5 py-1 font-mono text-xs text-muted transition group-hover:text-foreground"
                           >
                             {tag}
                           </li>

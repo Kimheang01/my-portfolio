@@ -90,10 +90,6 @@ export default function ScrollHero() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const blur = (px: number) => (touch || reduced ? "blur(0px)" : `blur(${px}px)`);
 
-    const css = getComputedStyle(document.documentElement);
-    const muted = css.getPropertyValue("--muted").trim();
-    const foreground = css.getPropertyValue("--foreground").trim();
-
     const gsapCtx = gsap.context(() => {
       // Entrance: the inner wrappers blur in from the sides. The outer
       // wrappers are left free for the scroll timeline below.
@@ -115,7 +111,9 @@ export default function ScrollHero() {
       }
 
       gsap.set(helloRef.current, { autoAlpha: 0, filter: blur(18) });
-      gsap.set(".hero-word", { opacity: 0.15, filter: blur(8), color: muted });
+      // --lit fades each word from muted to full color (see globals.css), so
+      // the words follow the theme colors even if they change mid-scroll.
+      gsap.set(".hero-word", { opacity: 0.15, filter: blur(8), "--lit": 0 });
       gsap.set(buttonRef.current, { autoAlpha: 0, y: 30 });
 
       gsap
@@ -163,7 +161,7 @@ export default function ScrollHero() {
           {
             opacity: 1,
             filter: blur(0),
-            color: foreground,
+            "--lit": 1,
             ease: "none",
             duration: 0.08,
             stagger: 0.25 / site.heroStatement.split(" ").length,
@@ -189,7 +187,9 @@ export default function ScrollHero() {
     <section
       id="home"
       ref={sectionRef}
-      className="relative h-svh overflow-hidden bg-background"
+      // The footage has a black background, so the hero stays dark in light mode too.
+      data-theme="dark"
+      className="relative h-svh overflow-hidden bg-background text-foreground"
     >
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
       <div className="pointer-events-none absolute inset-0 bg-background/35" />
@@ -215,7 +215,7 @@ export default function ScrollHero() {
                 exit={{ opacity: 0, y: 25 }}
                 transition={{ duration: 0.45 }}
               >
-                <div className="text-accent [text-shadow:0_12px_24px_rgb(139_124_255/0.35)]">
+                <div className="text-accent [text-shadow:0_12px_24px_color-mix(in_oklab,var(--accent)_35%,transparent)]">
                   {current.first}
                 </div>
                 <motion.div

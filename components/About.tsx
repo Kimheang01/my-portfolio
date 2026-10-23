@@ -69,7 +69,7 @@ export default function About() {
       <div className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.4fr)] lg:gap-16">
         {/* Profile card: stays in view beside the bio and skills */}
         <Reveal className="lg:sticky lg:top-28 lg:self-start">
-          <div className="relative overflow-hidden rounded-3xl border border-line bg-white/[0.02] p-3 sm:grid sm:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] sm:items-center sm:gap-4 lg:block">
+          <div className="relative overflow-hidden rounded-3xl border border-line bg-surface p-3 sm:grid sm:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] sm:items-center sm:gap-4 lg:block">
             <div
               aria-hidden
               className="pointer-events-none absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-accent/25 blur-3xl"
@@ -122,7 +122,7 @@ export default function About() {
                 delay={0.1 + i * 0.05}
                 className={skill.items.length > 4 ? "sm:col-span-2" : ""}
               >
-                <div className="group h-full rounded-2xl border border-line bg-white/[0.02] p-4 transition min-[400px]:p-5 duration-300 hover:border-accent/40 hover:bg-white/[0.04]">
+                <div className="group h-full rounded-2xl border border-line bg-surface p-4 transition min-[400px]:p-5 duration-300 hover:border-accent/40 hover:bg-surface-hover">
                   <div className="flex items-center gap-3">
                     <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/10 text-accent transition group-hover:bg-accent/20">
                       <GroupIcon group={skill.group} />
