@@ -6,7 +6,7 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-line">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 py-8 text-sm text-muted sm:flex-row sm:justify-between">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 px-6 pt-8 pb-[max(2rem,env(safe-area-inset-bottom))] text-sm text-muted sm:flex-row sm:justify-between">
         <p>© {site.name}</p>
 
         {socials.length > 0 && (
@@ -19,7 +19,7 @@ export default function Footer() {
                   rel="noreferrer"
                   aria-label={social.label}
                   title={social.label}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-line transition hover:border-accent hover:text-foreground"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-line transition hover:border-accent hover:text-foreground active:border-accent active:text-foreground"
                 >
                   <SocialIcon label={social.label} />
                 </a>

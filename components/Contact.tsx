@@ -30,7 +30,7 @@ function ChannelRow({
       <a
         href={href}
         {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-        className="group flex items-center gap-4 px-5 py-4 transition hover:bg-white/[0.04]"
+        className="group flex items-center gap-3 px-4 py-4 transition hover:bg-white/[0.04] active:bg-white/[0.06] min-[400px]:gap-4 sm:px-5"
       >
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-muted transition group-hover:border-accent/50 group-hover:text-foreground">
           {icon}
@@ -54,30 +54,30 @@ export default function Contact() {
   const socials = site.socials.filter((social) => social.href);
 
   return (
-    <section id="contact" className="mx-auto max-w-6xl px-6 py-32">
+    <section id="contact" className="mx-auto max-w-6xl px-6 py-20 sm:py-28 lg:py-32">
       <Reveal>
         <div className="relative overflow-hidden rounded-3xl border border-line bg-white/[0.02]">
           {/* Background glow */}
-          <div aria-hidden className="pointer-events-none absolute -top-40 -left-40 h-96 w-96 rounded-full bg-accent/20 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute -top-40 -left-40 h-72 w-72 sm:h-96 sm:w-96 rounded-full bg-accent/20 blur-3xl" />
           <div aria-hidden className="pointer-events-none absolute -right-32 -bottom-40 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
 
-          <div className="relative grid gap-12 p-8 sm:p-12 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16 lg:p-16">
+          <div className="relative grid gap-10 p-5 min-[400px]:p-7 sm:gap-12 sm:p-12 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16 lg:p-16">
             <div>
               <p className="font-mono text-sm tracking-widest text-accent uppercase">
                 Contact
               </p>
-              <h2 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">
+              <h2 className="mt-4 text-h2 font-semibold tracking-tight">
                 Let&apos;s build something together.
               </h2>
-              <p className="mt-6 max-w-md leading-relaxed text-muted">
+              <p className="mt-5 max-w-md text-body text-muted sm:mt-6">
                 Have a project in mind, a role to talk about, or just want to say
                 hi? Send me an email or a message on any of these.
               </p>
 
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
                 <a
                   href={`mailto:${site.email}`}
-                  className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition hover:bg-accent hover:text-foreground"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition hover:bg-accent hover:text-foreground active:bg-accent active:text-foreground"
                 >
                   <MailIcon />
                   Email me

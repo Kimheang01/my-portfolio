@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "lenis/dist/lenis.css";
 import "./globals.css";
+import MotionProvider from "@/components/MotionProvider";
 import NeonRibbonCursor from "@/components/NeonRibbonCursor";
 import SmoothScroll from "@/components/SmoothScroll";
 import { site } from "@/content/site";
@@ -21,6 +22,11 @@ export const metadata: Metadata = {
   description: site.tagline,
 };
 
+export const viewport: Viewport = {
+  themeColor: "#000000",
+  colorScheme: "dark",
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -29,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body>
         <SmoothScroll />
-        {children}
+        <MotionProvider>{children}</MotionProvider>
         <NeonRibbonCursor />
       </body>
     </html>
