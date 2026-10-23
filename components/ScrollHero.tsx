@@ -209,7 +209,7 @@ export default function ScrollHero() {
                   initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   transition={{ type: "spring", stiffness: 90, damping: 18, mass: 0.8, delay: 0.1 }}
-                  className="[text-shadow:0_-10px_20px_rgb(11_11_15/0.9)]"
+                  className="[text-shadow:0_-10px_20px_rgb(0_0_0/0.9)]"
                 >
                   {current.second}
                 </motion.div>
