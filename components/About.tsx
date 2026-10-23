@@ -3,68 +3,148 @@ import { site } from "@/content/site";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
 
+// Outline icons (24×24) for each skill group, matched by group name.
+const groupIcons: Record<string, React.ReactNode> = {
+  "Front-end": (
+    <>
+      <path d="m16 18 6-6-6-6" />
+      <path d="m8 6-6 6 6 6" />
+    </>
+  ),
+  "Back-end": (
+    <>
+      <rect x="2" y="2" width="20" height="8" rx="2" />
+      <rect x="2" y="14" width="20" height="8" rx="2" />
+      <path d="M6 6h.01M6 18h.01" />
+    </>
+  ),
+  Mobile: (
+    <>
+      <rect x="5" y="2" width="14" height="20" rx="2" />
+      <path d="M12 18h.01" />
+    </>
+  ),
+  Databases: (
+    <>
+      <ellipse cx="12" cy="5" rx="9" ry="3" />
+      <path d="M3 5v14a9 3 0 0 0 18 0V5" />
+      <path d="M3 12a9 3 0 0 0 18 0" />
+    </>
+  ),
+  Tools: (
+    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+  ),
+};
+
+function GroupIcon({ group }: { group: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-5 w-5"
+      aria-hidden
+    >
+      {groupIcons[group] ?? groupIcons["Front-end"]}
+    </svg>
+  );
+}
+
 export default function About() {
+  const [lead, ...rest] = site.about;
+  const education = site.experience.find((item) => item.kind === "education");
+  const facts = [
+    { label: "Born", value: site.dateOfBirth },
+    { label: "Based in", value: site.location },
+    education && { label: "Studied", value: `${education.title}, ${education.company}` },
+    { label: "Languages", value: site.languages.join(" · ") },
+  ].filter(Boolean) as { label: string; value: string }[];
+
   return (
     <section id="about" className="mx-auto max-w-6xl px-6 py-32">
       <SectionHeading eyebrow="About" title="A little about me" />
 
-      <div className="grid gap-16 md:grid-cols-[1.4fr_1fr]">
-        <Reveal>
-          <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
-            <div className="relative aspect-[3/4] w-40 shrink-0 overflow-hidden rounded-2xl border border-line">
+      <div className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.4fr)] lg:gap-16">
+        {/* Profile card: stays in view beside the bio and skills */}
+        <Reveal className="lg:sticky lg:top-28 lg:self-start">
+          <div className="relative overflow-hidden rounded-3xl border border-line bg-white/[0.02] p-3">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-accent/25 blur-3xl"
+            />
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
               <Image
                 src={site.photo}
                 alt={`Portrait of ${site.name}`}
                 fill
-                sizes="160px"
+                sizes="(min-width: 1024px) 380px, 100vw"
                 className="object-cover"
               />
+              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background/90 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-5">
+                <p className="text-xl font-semibold">{site.name}</p>
+                <p className="text-sm text-accent">{site.role}</p>
+              </div>
             </div>
-            <div className="space-y-5 text-lg leading-relaxed text-muted">
-              {site.about.map((paragraph) => (
+            <dl className="relative space-y-3 px-3 pt-5 pb-3 text-sm">
+              {facts.map((fact) => (
+                <div key={fact.label} className="flex gap-4">
+                  <dt className="w-24 shrink-0 text-muted">{fact.label}</dt>
+                  <dd>{fact.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </Reveal>
+
+        {/* Bio and skills */}
+        <div>
+          <Reveal delay={0.05}>
+            <p className="text-xl leading-relaxed sm:text-2xl sm:leading-relaxed">{lead}</p>
+            <div className="mt-6 space-y-5 leading-relaxed text-muted">
+              {rest.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
             </div>
-          </div>
-        </Reveal>
+          </Reveal>
 
-        <Reveal delay={0.1}>
-          <dl className="grid grid-cols-3 gap-4 border-y border-line py-6">
-            {site.stats.map((stat) => (
-              <div key={stat.label}>
-                <dt className="sr-only">{stat.label}</dt>
-                <dd className="text-3xl font-semibold">{stat.value}</dd>
-                <dd className="mt-1 text-xs text-muted">{stat.label}</dd>
-              </div>
+          <Reveal delay={0.1}>
+            <h3 className="mt-12 font-mono text-xs tracking-widest text-muted uppercase">
+              Skills &amp; tools
+            </h3>
+          </Reveal>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {site.skills.map((skill, i) => (
+              <Reveal
+                key={skill.group}
+                delay={0.1 + i * 0.05}
+                className={skill.items.length > 4 ? "sm:col-span-2" : ""}
+              >
+                <div className="group h-full rounded-2xl border border-line bg-white/[0.02] p-5 transition duration-300 hover:border-accent/40 hover:bg-white/[0.04]">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/10 text-accent transition group-hover:bg-accent/20">
+                      <GroupIcon group={skill.group} />
+                    </span>
+                    <p className="font-medium">{skill.group}</p>
+                  </div>
+                  <ul className="mt-4 flex flex-wrap gap-2">
+                    {skill.items.map((item) => (
+                      <li
+                        key={item}
+                        className="rounded-full border border-line px-3 py-1 text-sm text-muted transition group-hover:text-foreground"
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
             ))}
-          </dl>
-
-          <h3 className="mt-10 font-mono text-xs tracking-widest text-muted uppercase">
-            Skills &amp; tools
-          </h3>
-          <div className="mt-4 space-y-4">
-            {site.skills.map((skill) => (
-              <div key={skill.group}>
-                <p className="text-sm text-muted">{skill.group}</p>
-                <ul className="mt-2 flex flex-wrap gap-2">
-                  {skill.items.map((item) => (
-                    <li
-                      key={item}
-                      className="rounded-full border border-line px-3 py-1.5 text-sm"
-                    >
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
           </div>
-
-          <h3 className="mt-10 font-mono text-xs tracking-widest text-muted uppercase">
-            Languages
-          </h3>
-          <p className="mt-3 text-sm">{site.languages.join(" · ")}</p>
-        </Reveal>
+        </div>
       </div>
     </section>
   );

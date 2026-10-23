@@ -3,12 +3,14 @@ import Reveal from "./Reveal";
 export default function SectionHeading({
   eyebrow,
   title,
+  className = "mb-12",
 }: {
   eyebrow: string;
   title: string;
+  className?: string;
 }) {
   return (
-    <Reveal className="mb-12">
+    <Reveal className={className}>
       <p className="font-mono text-sm tracking-widest text-accent uppercase">
         {eyebrow}
       </p>
