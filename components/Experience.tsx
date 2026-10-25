@@ -1,20 +1,28 @@
-import { site } from "@/content/site";
+import { useFormatter, useMessages, useTranslations } from "next-intl";
+import { site, type Job } from "@/content/site";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
 
-const isCurrent = (period: string) => /present|now/i.test(period);
+const isCurrent = (job: Job) => !job.end;
+
+// "YYYY-MM" → the first of that month in Cambodia time (the request time zone).
+const toDate = (month: string) => new Date(`${month}-01T00:00:00+07:00`);
 
 export default function Experience() {
-  const current = site.experience.find((job) => isCurrent(job.period));
+  const t = useTranslations("Experience");
+  const format = useFormatter();
+  const items = useMessages().Experience.items;
+  const current = site.experience.find(isCurrent);
+  const month = (value: string) => format.dateTime(toDate(value), { month: "short", year: "numeric" });
 
   return (
     <section id="experience" className="mx-auto max-w-6xl px-6 py-20 sm:py-28 lg:py-32">
       <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.9fr)] lg:gap-16">
         {/* Left: stays in view while the timeline scrolls past */}
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <SectionHeading eyebrow="Experience" title="Where I've been" className="mb-6" />
+          <SectionHeading eyebrow={t("eyebrow")} title={t("title")} className="mb-6" />
           <Reveal delay={0.05}>
-            <p className="max-w-sm text-body text-muted">{site.experienceIntro}</p>
+            <p className="max-w-sm text-body text-muted">{t("intro")}</p>
           </Reveal>
           {current && (
             <Reveal delay={0.1}>
@@ -24,10 +32,11 @@ export default function Experience() {
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
                 </span>
                 <span className="text-sm">
-                  <span className="text-muted">Currently </span>
-                  {current.title}
-                  <span className="text-muted"> at </span>
-                  {current.company}
+                  {t.rich("current", {
+                    title: t(`items.${current.id}.title`),
+                    company: current.company,
+                    muted: (chunks) => <span className="text-muted">{chunks}</span>,
+                  })}
                 </span>
               </div>
             </Reveal>
@@ -37,9 +46,12 @@ export default function Experience() {
         {/* Right: timeline of cards */}
         <ol className="relative space-y-6 before:absolute before:top-3 before:bottom-3 before:left-[7px] before:w-px before:bg-gradient-to-b before:from-accent/60 before:via-line before:to-transparent">
           {site.experience.map((job, i) => {
-            const now = isCurrent(job.period);
+            const now = isCurrent(job);
+            // Jobs list highlights; the education entry has a description.
+            const item: { description?: string; highlights?: string[] } = items[job.id];
+            const { description, highlights } = item;
             return (
-              <li key={`${job.company}-${job.title}`} className="relative pl-7 sm:pl-10">
+              <li key={job.id} className="relative pl-7 sm:pl-10">
                 <span
                   className={`absolute top-7 left-0 h-[15px] w-[15px] sm:top-8 rounded-full border-2 ${
                     now
@@ -52,9 +64,9 @@ export default function Experience() {
                     <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
                       <div>
                         <p className="font-mono text-xs tracking-widest text-accent uppercase">
-                          {job.kind === "education" ? "Education" : job.company}
+                          {job.kind === "education" ? t("education") : job.company}
                         </p>
-                        <h3 className="mt-2 text-h3 font-semibold">{job.title}</h3>
+                        <h3 className="mt-2 text-h3 font-semibold">{t(`items.${job.id}.title`)}</h3>
                         {job.kind === "education" && (
                           <p className="mt-1 text-muted">{job.company}</p>
                         )}
@@ -64,16 +76,19 @@ export default function Experience() {
                           now ? "border-accent/40 bg-accent/10 text-foreground" : "border-line text-muted"
                         }`}
                       >
-                        {job.period}
+                        {t("period", {
+                          start: month(job.start),
+                          end: job.end ? month(job.end) : t("present"),
+                        })}
                       </span>
                     </div>
 
-                    {job.description && (
-                      <p className="mt-4 text-body text-muted">{job.description}</p>
+                    {description && (
+                      <p className="mt-4 text-body text-muted">{description}</p>
                     )}
-                    {job.highlights && (
+                    {highlights && (
                       <ul className="mt-4 space-y-2.5 sm:mt-5 sm:space-y-3">
-                        {job.highlights.map((item) => (
+                        {highlights.map((item) => (
                           <li key={item} className="flex gap-3 text-body text-muted">
                             <span className="mt-[0.7em] h-px w-3 shrink-0 bg-accent" />
                             <span>{item}</span>

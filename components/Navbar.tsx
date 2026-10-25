@@ -2,15 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { site } from "@/content/site";
+import { LanguageMenu, LanguageToggle } from "./LanguageSwitcher";
 import ThemeSwitcher, { ThemeControls } from "./ThemeSwitcher";
 
+// Section anchors on the page; labels are translated under Nav.
 const links = [
-  { href: "#about", label: "About" },
-  { href: "#experience", label: "Experience" },
-  { href: "#projects", label: "Projects" },
-  { href: "#contact", label: "Contact" },
-];
+  { href: "#about", key: "about" },
+  { href: "#experience", key: "experience" },
+  { href: "#projects", key: "projects" },
+  { href: "#contact", key: "contact" },
+] as const;
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -27,13 +30,15 @@ function MenuIcon({ open }: { open: boolean }) {
 }
 
 export default function Navbar() {
+  const t = useTranslations("Nav");
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
   const [active, setActive] = useState<string | null>(null);
   // Over the dark hero the bar is transparent, so it stays dark there; once
   // it gets a background it follows the chosen theme.
-  const solid = scrolled || open || themeOpen;
+  const solid = scrolled || open || themeOpen || languageOpen;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -103,13 +108,13 @@ export default function Navbar() {
           solid ? "border-b border-line bg-background/80 backdrop-blur-md" : "border-b border-transparent"
         }`}
       >
-        <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <nav aria-label={t("label")} className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <a href="#home" className="font-semibold tracking-tight" onClick={() => setOpen(false)}>
             {site.name}
           </a>
 
-          <div className="hidden items-center gap-8 md:flex">
-            <ul className="flex gap-8 text-sm text-muted">
+          <div className="hidden items-center gap-6 md:flex lg:gap-8">
+            <ul className="flex gap-6 text-sm text-muted lg:gap-8">
               {links.map((link) => (
                 <li key={link.href}>
                   <a
@@ -117,18 +122,21 @@ export default function Navbar() {
                     aria-current={active === link.href ? "location" : undefined}
                     className="relative py-2 transition hover:text-foreground aria-[current]:text-foreground after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:scale-x-0 after:bg-accent after:shadow-[0_0_8px_var(--accent)] after:transition-transform after:duration-300 aria-[current]:after:scale-x-100"
                   >
-                    {link.label}
+                    {t(link.key)}
                   </a>
                 </li>
               ))}
             </ul>
-            <ThemeSwitcher open={themeOpen} onOpenChange={setThemeOpen} />
+            <div className="flex items-center gap-2">
+              <LanguageMenu onOpenChange={setLanguageOpen} />
+              <ThemeSwitcher open={themeOpen} onOpenChange={setThemeOpen} />
+            </div>
           </div>
 
           <button
             type="button"
             className="-mr-2 flex h-11 w-11 items-center justify-center rounded-full text-foreground transition active:bg-foreground/10 md:hidden"
-            aria-label={open ? "Close menu" : "Open menu"}
+            aria-label={open ? t("closeMenu") : t("openMenu")}
             aria-expanded={open}
             aria-controls="mobile-menu"
             onClick={() => setOpen((o) => !o)}
@@ -167,7 +175,7 @@ export default function Navbar() {
                         className="group flex items-center justify-between border-b border-line py-4 text-2xl font-medium tracking-tight transition active:text-accent aria-[current]:text-accent"
                         onClick={() => setOpen(false)}
                       >
-                        {link.label}
+                        {t(link.key)}
                         <span aria-hidden className="text-base text-muted group-aria-[current]:text-accent">
                           0{i + 1}
                         </span>
@@ -181,7 +189,10 @@ export default function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.05 + links.length * 0.05, ease }}
                 >
-                  <ThemeControls />
+                  <div className="space-y-5">
+                    <LanguageToggle onSwitch={() => setOpen(false)} />
+                    <ThemeControls />
+                  </div>
                 </motion.div>
               </div>
             </motion.div>

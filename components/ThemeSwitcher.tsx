@@ -2,7 +2,8 @@
 
 import { useEffect, useId, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ACCENTS, MODES, accentById, type ModePreference } from "@/lib/theme";
+import { useTranslations } from "next-intl";
+import { ACCENTS, MODES, type ModePreference } from "@/lib/theme";
 import { setAccent, setMode, useTheme } from "@/lib/use-theme";
 
 const icons: Record<ModePreference, React.ReactNode> = {
@@ -47,13 +48,14 @@ const legend = "font-mono text-xs tracking-widest text-muted uppercase";
  * the mobile menu.
  */
 export function ThemeControls() {
+  const t = useTranslations("Theme");
   const id = useId();
   const { mode, resolved, accent } = useTheme();
 
   return (
     <div className="space-y-5">
       <fieldset>
-        <legend className={`mb-2.5 ${legend}`}>Mode</legend>
+        <legend className={`mb-2.5 ${legend}`}>{t("mode")}</legend>
         <div className="grid grid-cols-3 gap-1 rounded-full border border-line bg-surface p-1">
           {MODES.map((option) => {
             const checked = mode === option.id;
@@ -83,7 +85,7 @@ export function ThemeControls() {
                 <span className="relative">
                   <Icon>{icons[option.id]}</Icon>
                 </span>
-                <span className="relative">{option.label}</span>
+                <span className="relative">{t(`modes.${option.id}`)}</span>
               </label>
             );
           })}
@@ -92,9 +94,9 @@ export function ThemeControls() {
 
       <fieldset>
         <legend className={`mb-2.5 flex w-full items-center justify-between ${legend}`}>
-          Accent
+          {t("accent")}
           <span className="font-sans text-xs tracking-normal text-foreground normal-case">
-            {accentById(accent).name}
+            {t(`accents.${accent}`)}
           </span>
         </legend>
         <div className="grid grid-cols-6 gap-1">
@@ -105,7 +107,7 @@ export function ThemeControls() {
             return (
               <label
                 key={option.id}
-                title={option.name}
+                title={t(`accents.${option.id}`)}
                 className="group flex aspect-square min-h-10 cursor-pointer items-center justify-center rounded-full"
               >
                 <input
@@ -116,7 +118,7 @@ export function ThemeControls() {
                   onChange={() => setAccent(option.id)}
                   className="sr-only"
                 />
-                <span className="sr-only">{option.name}</span>
+                <span className="sr-only">{t(`accents.${option.id}`)}</span>
                 <span
                   aria-hidden
                   className={`flex h-8 w-8 items-center justify-center rounded-full text-background ring-offset-2 ring-offset-background transition duration-200 group-hover:scale-110 group-has-[:focus-visible]:outline-2 group-has-[:focus-visible]:outline-offset-4 group-has-[:focus-visible]:outline-foreground ${
@@ -151,6 +153,7 @@ export default function ThemeSwitcher({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
+  const t = useTranslations("Theme");
 
   // While open: close on Escape (returning focus to the button), on a click
   // outside, or when focus moves elsewhere on the page.
@@ -184,7 +187,7 @@ export default function ThemeSwitcher({
       <button
         ref={buttonRef}
         type="button"
-        aria-label="Theme settings"
+        aria-label={t("settings")}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls={panelId}
@@ -211,7 +214,7 @@ export default function ThemeSwitcher({
             ref={panelRef}
             id={panelId}
             role="dialog"
-            aria-label="Theme settings"
+            aria-label={t("settings")}
             className="absolute top-full right-0 mt-3 w-80 origin-top-right overflow-hidden rounded-2xl border border-line bg-background p-4 shadow-2xl shadow-black/30"
             initial={{ opacity: 0, y: -6, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -223,7 +226,7 @@ export default function ThemeSwitcher({
               className="pointer-events-none absolute -top-16 -right-12 h-36 w-36 rounded-full bg-accent/20 blur-3xl"
             />
             <div className="relative">
-              <p className="mb-4 text-sm font-medium">Appearance</p>
+              <p className="mb-4 text-sm font-medium">{t("appearance")}</p>
               <ThemeControls />
             </div>
           </motion.div>

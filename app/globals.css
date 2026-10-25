@@ -17,8 +17,9 @@
   --color-line: var(--line);
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Geist for Latin text; Khmer characters fall back to Noto Sans Khmer. */
+  --font-sans: var(--font-geist-sans), var(--font-noto-khmer);
+  --font-mono: var(--font-geist-mono), var(--font-noto-khmer);
 
   /* Fluid type: each size grows smoothly from a 320px phone to a 1024px
      screen, then stays at its desktop size. Used as text-display, text-h2, … */
@@ -52,8 +53,56 @@ body {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-geist-sans), var(--font-noto-khmer), system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Khmer: stacked vowels and subscript consonants need taller lines than
+   Latin text, and wide letter-spacing pulls the script apart. Long Khmer
+   phrases have no spaces, so they may also wrap between characters. The
+   hero headline stays English, so its tight leading is left alone. */
+:lang(km) {
+  overflow-wrap: break-word;
+}
+
+:lang(km) .text-hello {
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+/* Khmer phrases are long, so the hero statement flows as normal text rather
+   than one unbreakable block per phrase. */
+:lang(km) .hero-word {
+  display: inline;
+}
+
+:lang(km) .text-xs {
+  font-size: 0.8125rem;
+}
+
+:lang(km) .text-name,
+:lang(km) .text-h2 {
+  line-height: 1.45;
+  text-wrap: balance;
+}
+
+:lang(km) .text-intro,
+:lang(km) .text-h3,
+:lang(km) .text-card {
+  line-height: 1.6;
+}
+
+:lang(km) .text-lead,
+:lang(km) .text-body {
+  line-height: 1.85;
+}
+
+:lang(km) .tracking-widest {
+  letter-spacing: 0.05em;
+}
+
+:lang(km) .tracking-tight {
+  letter-spacing: 0;
 }
 
 ::selection {
@@ -66,10 +115,14 @@ body {
   outline-offset: 2px;
 }
 
-/* Hero statement words brighten from muted to full color as you scroll;
-   the hero animates --lit from 0 to 1. */
+/* Hero statement words brighten one after another as you scroll: the hero
+   animates --progress on the paragraph from 0 to 1, and each word fades from
+   muted to full color over its own slice of that, starting at its --start. */
 .hero-word {
-  color: color-mix(in oklab, var(--foreground) calc(var(--lit, 1) * 100%), var(--muted));
+  --shown: clamp(0, (var(--progress, 1) - var(--start, 0)) / 0.25, 1);
+  opacity: calc(0.15 + 0.85 * var(--shown));
+  filter: blur(calc((1 - var(--shown)) * var(--word-blur, 0px)));
+  color: color-mix(in oklab, var(--foreground) calc(var(--shown) * 100%), var(--muted));
 }
 
 /* Switching theme cross-fades the page (in browsers with view transitions). */

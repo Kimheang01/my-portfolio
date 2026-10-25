@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useTranslations } from "next-intl";
 import { heroSequence, site } from "@/content/site";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -14,6 +15,9 @@ const isReady = (img: HTMLImageElement) => img.complete && img.naturalWidth > 0;
 // On load the headline and intro blur in from the sides; scrolling sends
 // them back out and reveals the "Hello" statement word by word.
 export default function ScrollHero() {
+  const t = useTranslations("Hero");
+  const roles = t.raw("roles") as { first: string; second: string }[];
+  const words = t("statement").split(" ");
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const headlineRef = useRef<HTMLDivElement>(null);
@@ -22,16 +26,14 @@ export default function ScrollHero() {
   const introInnerRef = useRef<HTMLDivElement>(null);
   const hintRef = useRef<HTMLDivElement>(null);
   const helloRef = useRef<HTMLDivElement>(null);
+  const statementRef = useRef<HTMLParagraphElement>(null);
   const buttonRef = useRef<HTMLAnchorElement>(null);
   const [role, setRole] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(
-      () => setRole((r) => (r + 1) % site.roles.length),
-      4000,
-    );
+    const id = setInterval(() => setRole((r) => (r + 1) % roles.length), 4000);
     return () => clearInterval(id);
-  }, []);
+  }, [roles.length]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -111,9 +113,11 @@ export default function ScrollHero() {
       }
 
       gsap.set(helloRef.current, { autoAlpha: 0, filter: blur(18) });
-      // --lit fades each word from muted to full color (see globals.css), so
-      // the words follow the theme colors even if they change mid-scroll.
-      gsap.set(".hero-word", { opacity: 0.15, filter: blur(8), "--lit": 0 });
+      // The statement's words are revealed in CSS from one --progress value
+      // (see .hero-word in globals.css), so they can change language or theme
+      // colors without rebuilding this timeline.
+      section.style.setProperty("--word-blur", touch || reduced ? "0px" : "8px");
+      gsap.set(statementRef.current, { "--progress": 0 });
       gsap.set(buttonRef.current, { autoAlpha: 0, y: 30 });
 
       gsap
@@ -156,18 +160,7 @@ export default function ScrollHero() {
           { autoAlpha: 1, filter: blur(0), ease: "none", duration: 0.15 },
           0.4,
         )
-        .to(
-          ".hero-word",
-          {
-            opacity: 1,
-            filter: blur(0),
-            "--lit": 1,
-            ease: "none",
-            duration: 0.08,
-            stagger: 0.25 / site.heroStatement.split(" ").length,
-          },
-          0.5,
-        )
+        .to(statementRef.current, { "--progress": 1, ease: "none", duration: 0.33 }, 0.5)
         .to(
           buttonRef.current,
           { autoAlpha: 1, y: 0, ease: "none", duration: 0.1 },
@@ -181,7 +174,7 @@ export default function ScrollHero() {
     };
   }, []);
 
-  const current = site.roles[role];
+  const current = roles[role % roles.length];
 
   return (
     <section
@@ -196,7 +189,7 @@ export default function ScrollHero() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background/90 to-transparent" />
 
       <h1 className="sr-only">
-        {site.name}, {site.role}
+        {site.name}, {roles[0].first} {roles[0].second}
       </h1>
 
       {/* Left: rotating role headline */}
@@ -240,13 +233,13 @@ export default function ScrollHero() {
       >
         <div ref={introInnerRef}>
           <p className="mb-3 text-xs text-muted italic md:mb-4 lg:mb-6 lg:text-sm">
-            ~ Introduction
+            {t("introLabel")}
           </p>
           <h2 className="mb-3 text-intro leading-tight font-medium md:mb-4 lg:mb-6">
-            {site.intro.heading}
+            {t("introHeading")}
           </h2>
           <p className="text-sm leading-6 text-muted min-[400px]:leading-7 lg:text-[15px] lg:leading-8">
-            {site.intro.text}
+            {t("introText")}
           </p>
         </div>
       </div>
@@ -257,16 +250,23 @@ export default function ScrollHero() {
         className="invisible absolute right-6 bottom-8 left-6 max-w-[680px] opacity-0 short:bottom-5 md:right-auto md:bottom-12 lg:bottom-16 lg:left-16"
       >
         <p className="text-hello font-light tracking-[0.18em] uppercase short:text-3xl md:tracking-[0.24em] lg:tracking-[0.3em]">
-          Hello
+          {t("hello")}
         </p>
         <p className="mb-4 text-name leading-tight text-accent uppercase short:mb-2 short:text-xl md:mb-6">
-          I&apos;m {site.name}
+          {t("greeting", { name: site.name })}
         </p>
-        <p className="mb-6 max-w-xl text-sm leading-7 short:mb-3 short:leading-6 md:mb-8 md:text-[15px] md:leading-8">
-          {site.heroStatement.split(" ").map((word, i) => (
-            <span key={i} className="hero-word mr-[0.3em] inline-block">
-              {word}
-            </span>
+        <p ref={statementRef} className="mb-6 max-w-xl text-sm leading-7 short:mb-3 short:leading-6 md:mb-8 md:text-[15px] md:leading-8">
+          {/* Real spaces between the words, so lines can break there. */}
+          {words.map((word, i) => (
+            <Fragment key={i}>
+              {i > 0 && " "}
+              <span
+                className="hero-word inline-block"
+                style={{ "--start": (i / words.length) * 0.75 } as React.CSSProperties}
+              >
+                {word}
+              </span>
+            </Fragment>
           ))}
         </p>
         <a
@@ -274,7 +274,7 @@ export default function ScrollHero() {
           href="#experience"
           className="group inline-flex min-h-11 items-center gap-3 rounded-full border border-accent/40 bg-accent/10 px-6 py-3 text-sm font-medium transition hover:border-accent hover:bg-accent/20 active:bg-accent/25 short:py-2"
         >
-          View Experience
+          {t("cta")}
           <span className="transition-transform group-hover:translate-x-1">→</span>
         </a>
       </div>
@@ -283,7 +283,7 @@ export default function ScrollHero() {
         ref={hintRef}
         className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 font-mono text-xs tracking-widest text-muted uppercase short:hidden md:bottom-8"
       >
-        Scroll
+        {t("scroll")}
         <span className="h-8 w-px animate-pulse bg-muted md:h-10" />
       </div>
     </section>
