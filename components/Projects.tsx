@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { site, type Project } from "@/content/site";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
@@ -10,13 +11,14 @@ const initials = (title: string) =>
     .map((word) => word[0])
     .join("");
 
-function ProjectLogo({ project }: { project: Project }) {
+function ProjectLogo({ project, title }: { project: Project; title: string }) {
+  const t = useTranslations("Projects");
   if (project.logo) {
     return (
       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-white sm:h-16 sm:w-16 shadow-lg shadow-black/30 ring-1 ring-foreground/10">
         <Image
           src={project.logo}
-          alt={`${project.title} logo`}
+          alt={t("logoAlt", { title })}
           fill
           sizes="64px"
           className="object-contain"
@@ -30,26 +32,29 @@ function ProjectLogo({ project }: { project: Project }) {
       style={{ background: `linear-gradient(135deg, ${project.color}, ${project.color}99)` }}
       aria-hidden
     >
-      {initials(project.title)}
+      {project.monogram ?? initials(title)}
     </div>
   );
 }
 
 export default function Projects() {
+  const t = useTranslations("Projects");
   return (
     <section id="projects" className="mx-auto max-w-6xl px-6 py-20 sm:py-28 lg:py-32">
       <div className="mb-10 flex flex-col gap-5 sm:mb-12 md:flex-row md:items-end md:justify-between md:gap-6">
-        <SectionHeading eyebrow="Projects" title="Selected work" className="" />
+        <SectionHeading eyebrow={t("eyebrow")} title={t("title")} className="" />
         <Reveal delay={0.05}>
           <p className="max-w-sm text-body text-muted md:text-right">
-            {site.projectsIntro}
+            {t("intro")}
           </p>
         </Reveal>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {site.projects.map((project, i) => (
-          <Reveal key={project.title} delay={(i % 2) * 0.1} className="h-full">
+        {site.projects.map((project, i) => {
+          const title = t(`items.${project.id}.title`);
+          return (
+          <Reveal key={project.id} delay={(i % 2) * 0.1} className="h-full">
             <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-surface p-5 transition duration-300 hover:-translate-y-1 hover:border-foreground/15 min-[400px]:p-7 sm:p-8">
               {/* Brand-colored glow, brighter on hover */}
               <div
@@ -68,27 +73,27 @@ export default function Projects() {
               />
 
               <div className="relative flex items-start justify-between gap-4">
-                <ProjectLogo project={project} />
+                <ProjectLogo project={project} title={title} />
                 <span className="rounded-full border border-line bg-background/40 px-3 py-1 text-center text-xs text-muted backdrop-blur">
-                  {project.type}
+                  {t(`items.${project.id}.type`)}
                 </span>
               </div>
 
               <p className="relative mt-6 font-mono text-xs tracking-widest text-muted uppercase sm:mt-8">
-                {project.context}
+                {t(`items.${project.id}.context`)}
               </p>
               <h3 className="relative mt-2 text-card font-semibold tracking-tight">
-                {project.title}
+                {title}
               </h3>
               <p className="relative mt-3 text-body text-muted">
-                {project.description}
+                {t(`items.${project.id}.description`)}
               </p>
 
               {project.image && (
                 <div className="relative mt-6 aspect-video overflow-hidden rounded-xl border border-line">
                   <Image
                     src={project.image}
-                    alt={`Screenshot of ${project.title}`}
+                    alt={t("screenshotAlt", { title })}
                     fill
                     sizes="(min-width: 768px) 50vw, 100vw"
                     className="object-cover transition duration-500 group-hover:scale-105"
@@ -111,12 +116,12 @@ export default function Projects() {
                   <div className="mt-3 flex gap-5 text-sm">
                     {project.href && (
                       <a href={project.href} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center text-accent hover:underline">
-                        Live site ↗
+                        {t("liveSite")} ↗
                       </a>
                     )}
                     {project.repo && (
                       <a href={project.repo} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center text-muted hover:text-foreground">
-                        Source ↗
+                        {t("source")} ↗
                       </a>
                     )}
                   </div>
@@ -124,7 +129,8 @@ export default function Projects() {
               </div>
             </article>
           </Reveal>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

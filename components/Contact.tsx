@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { site } from "@/content/site";
 import CopyEmailButton from "./CopyEmailButton";
 import Reveal from "./Reveal";
@@ -51,6 +52,8 @@ function ChannelRow({
 }
 
 export default function Contact() {
+  const t = useTranslations("Contact");
+  const tCommon = useTranslations("Common");
   const socials = site.socials.filter((social) => social.href);
 
   return (
@@ -64,15 +67,10 @@ export default function Contact() {
           <div className="relative grid gap-10 p-5 min-[400px]:p-7 sm:gap-12 sm:p-12 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16 lg:p-16">
             <div>
               <p className="font-mono text-sm tracking-widest text-accent uppercase">
-                Contact
+                {t("eyebrow")}
               </p>
-              <h2 className="mt-4 text-h2 font-semibold tracking-tight">
-                Let&apos;s build something together.
-              </h2>
-              <p className="mt-5 max-w-md text-body text-muted sm:mt-6">
-                Have a project in mind, a role to talk about, or just want to say
-                hi? Send me an email or a message on any of these.
-              </p>
+              <h2 className="mt-4 text-h2 font-semibold tracking-tight">{t("title")}</h2>
+              <p className="mt-5 max-w-md text-body text-muted sm:mt-6">{t("text")}</p>
 
               <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
                 <a
@@ -80,9 +78,12 @@ export default function Contact() {
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition hover:bg-accent active:bg-accent"
                 >
                   <MailIcon />
-                  Email me
+                  {t("emailMe")}
                 </a>
-                <CopyEmailButton email={site.email} />
+                <CopyEmailButton
+                  email={site.email}
+                  labels={{ copy: t("copyEmail"), copied: t("copied"), failed: t("copyFailed") }}
+                />
               </div>
 
               <p className="mt-8 flex items-center gap-2 text-sm text-muted">
@@ -90,7 +91,7 @@ export default function Contact() {
                   <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
-                Based in {site.location}
+                {t("basedIn", { location: tCommon("location") })}
               </p>
             </div>
 
@@ -98,7 +99,7 @@ export default function Contact() {
               <ChannelRow
                 href={`mailto:${site.email}`}
                 icon={<MailIcon />}
-                label="Email"
+                label={t("email")}
                 value={site.email}
                 external={false}
               />

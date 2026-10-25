@@ -6,11 +6,8 @@ export type Mode = "dark" | "light";
 /** What the visitor picked: a fixed mode, or follow the device setting. */
 export type ModePreference = Mode | "system";
 
-export const MODES: { id: ModePreference; label: string }[] = [
-  { id: "dark", label: "Dark" },
-  { id: "light", label: "Light" },
-  { id: "system", label: "System" },
-];
+// Labels are translated under Theme.modes in the message files.
+export const MODES: { id: ModePreference }[] = [{ id: "dark" }, { id: "light" }, { id: "system" }];
 
 /** Neutral colors for each mode. Dark is the original black theme. */
 export const PALETTES: Record<Mode, Record<string, string>> = {
@@ -33,17 +30,17 @@ export const PALETTES: Record<Mode, Record<string, string>> = {
 };
 
 /**
- * Accent presets. `dark` is used on the black theme and `light` (a deeper
+ * Accent presets (names are translated under Theme.accents). `dark` is used on the black theme and `light` (a deeper
  * shade) on the light theme, so accent text keeps at least 4.5:1 contrast
  * against the page in both. `trail` colors the neon cursor, head to tail.
  */
 export const ACCENTS = [
-  { id: "blue", name: "Electric Blue", dark: "#3b82f6", light: "#1d4ed8", trail: ["#22d3ee", "#3b82f6", "#8b5cf6"] },
-  { id: "purple", name: "Neon Purple", dark: "#a855f7", light: "#7e22ce", trail: ["#e879f9", "#a855f7", "#6366f1"] },
-  { id: "emerald", name: "Emerald Green", dark: "#10b981", light: "#047857", trail: ["#a3e635", "#10b981", "#06b6d4"] },
-  { id: "cyan", name: "Cyber Cyan", dark: "#06b6d4", light: "#0e7490", trail: ["#67e8f9", "#06b6d4", "#3b82f6"] },
-  { id: "rose", name: "Rose Pink", dark: "#f43f5e", light: "#be123c", trail: ["#fb923c", "#f43f5e", "#d946ef"] },
-  { id: "amber", name: "Amber Gold", dark: "#f59e0b", light: "#b45309", trail: ["#fde047", "#f59e0b", "#ef4444"] },
+  { id: "blue", dark: "#3b82f6", light: "#1d4ed8", trail: ["#22d3ee", "#3b82f6", "#8b5cf6"] },
+  { id: "purple", dark: "#a855f7", light: "#7e22ce", trail: ["#e879f9", "#a855f7", "#6366f1"] },
+  { id: "emerald", dark: "#10b981", light: "#047857", trail: ["#a3e635", "#10b981", "#06b6d4"] },
+  { id: "cyan", dark: "#06b6d4", light: "#0e7490", trail: ["#67e8f9", "#06b6d4", "#3b82f6"] },
+  { id: "rose", dark: "#f43f5e", light: "#be123c", trail: ["#fb923c", "#f43f5e", "#d946ef"] },
+  { id: "amber", dark: "#f59e0b", light: "#b45309", trail: ["#fde047", "#f59e0b", "#ef4444"] },
 ] as const;
 
 export type Accent = (typeof ACCENTS)[number];

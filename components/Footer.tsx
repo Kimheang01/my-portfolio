@@ -1,13 +1,15 @@
+import { useTranslations } from "next-intl";
 import { site } from "@/content/site";
 import SocialIcon from "./SocialIcon";
 
 export default function Footer() {
+  const t = useTranslations("Footer");
   const socials = site.socials.filter((social) => social.href);
 
   return (
     <footer className="border-t border-line">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 px-6 pt-8 pb-[max(2rem,env(safe-area-inset-bottom))] text-sm text-muted sm:flex-row sm:justify-between">
-        <p>© {site.name}</p>
+        <p>{t("copyright", { name: site.name })}</p>
 
         {socials.length > 0 && (
           <ul className="flex items-center gap-3">
