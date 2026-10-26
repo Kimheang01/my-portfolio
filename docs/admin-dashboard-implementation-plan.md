@@ -10,7 +10,7 @@ this plan wins: it reflects how the existing code actually works.
 | --- | --- | --- |
 | 0 | Prerequisites | Language PR merged (#5); review fixes still open (separate branch) |
 | 1 | Data foundation | Done (b8d3479) |
-| 2 | Public site reads from the database | Not started |
+| 2 | Public site reads from the database | Done |
 | 3 | Login and admin shell | Not started |
 | 4 | Projects end to end | Not started |
 | 5 | Other content | Not started |
@@ -39,7 +39,7 @@ Update this table whenever a phase starts, finishes or is approved.
 | Deferred | Project gallery, full descriptions, project detail pages, blog, inbox, analytics |
 | Branches | All phases on `feat/admin-dashboard`, one commit per phase; unrelated fixes on their own branches |
 
-Still open: hosting confirmation (Vercel assumed), media provider, GitHub account ID.
+Hosting: Vercel (confirmed). Still open: media provider, GitHub account ID.
 
 ## Phases
 
@@ -65,6 +65,8 @@ Still open: hosting confirmation (Vercel assumed), media provider, GitHub accoun
 - Extract `components/ProjectCard.tsx` from `Projects.tsx`.
 - Remove content keys from `messages/*.json`; `content/site.ts` keeps only
   `heroSequence`.
+- The seed's source moves to `scripts/seed-data/` (the removed message keys
+  and the old `content/site.ts` data), so a fresh database can still be filled.
 - Done when: tsc, lint, `i18n:check` and build pass, and both languages match
   the baseline screenshots.
 

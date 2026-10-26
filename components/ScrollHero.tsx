@@ -5,7 +5,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useTranslations } from "next-intl";
-import { heroSequence, site } from "@/content/site";
+import { heroSequence } from "@/content/site";
+import type { HeroRole } from "@/modules/portfolio/types";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,10 +15,22 @@ const isReady = (img: HTMLImageElement) => img.complete && img.naturalWidth > 0;
 // Pins the hero and plays an image sequence on a canvas as you scroll.
 // On load the headline and intro blur in from the sides; scrolling sends
 // them back out and reveals the "Hello" statement word by word.
-export default function ScrollHero() {
+export default function ScrollHero({
+  name,
+  roles,
+  introHeading,
+  introText,
+  statement,
+}: {
+  name: string;
+  /** The rotating headline; the first one is also the page's <h1> */
+  roles: HeroRole[];
+  introHeading: string;
+  introText: string;
+  statement: string;
+}) {
   const t = useTranslations("Hero");
-  const roles = t.raw("roles") as { first: string; second: string }[];
-  const words = t("statement").split(" ");
+  const words = statement.split(" ");
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const headlineRef = useRef<HTMLDivElement>(null);
@@ -189,7 +202,7 @@ export default function ScrollHero() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background/90 to-transparent" />
 
       <h1 className="sr-only">
-        {site.name}, {roles[0].first} {roles[0].second}
+        {name}, {roles[0].first} {roles[0].second}
       </h1>
 
       {/* Left: rotating role headline */}
@@ -236,10 +249,10 @@ export default function ScrollHero() {
             {t("introLabel")}
           </p>
           <h2 className="mb-3 text-intro leading-tight font-medium md:mb-4 lg:mb-6">
-            {t("introHeading")}
+            {introHeading}
           </h2>
           <p className="text-sm leading-6 text-muted min-[400px]:leading-7 lg:text-[15px] lg:leading-8">
-            {t("introText")}
+            {introText}
           </p>
         </div>
       </div>
@@ -253,7 +266,7 @@ export default function ScrollHero() {
           {t("hello")}
         </p>
         <p className="mb-4 text-name leading-tight text-accent uppercase short:mb-2 short:text-xl md:mb-6">
-          {t("greeting", { name: site.name })}
+          {t("greeting", { name })}
         </p>
         <p ref={statementRef} className="mb-6 max-w-xl text-sm leading-7 short:mb-3 short:leading-6 md:mb-8 md:text-[15px] md:leading-8">
           {/* Real spaces between the words, so lines can break there. */}

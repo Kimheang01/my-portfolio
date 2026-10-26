@@ -1,18 +1,18 @@
-// Copies the portfolio content in content/site.ts and messages/*.json into
-// the database. It only adds what's missing: a profile, project, job, skill
-// group or link that's already in the database (for example, edited in the
-// admin dashboard) is left as it is, so it's safe to run again.
+// Copies the portfolio content in scripts/seed-data/ into the database. It
+// only adds what's missing: a profile, project, job, skill group or link
+// that's already in the database (for example, edited in the admin
+// dashboard) is left as it is, so it's safe to run again.
 // Run: yarn db:seed
 import fs from "node:fs";
 import path from "node:path";
 import { loadEnvConfig } from "@next/env";
 import { eq } from "drizzle-orm";
-import { site } from "@/content/site";
 import { routing, type Locale } from "@/i18n/routing";
-import en from "@/messages/en.json";
-import km from "@/messages/km.json";
 import { createDb, databaseUrl, type Database } from "@/db/client";
 import * as t from "@/db/schema";
+import en from "./seed-data/en.json";
+import km from "./seed-data/km.json";
+import { site } from "./seed-data/site";
 
 loadEnvConfig(process.cwd(), process.env.NODE_ENV !== "production");
 
@@ -132,8 +132,8 @@ async function seed(db: Database, added: Tally, kept: Tally) {
           name: messages[locale].About.skills[key].name,
         })),
       );
-      // Items are matched across languages by position (yarn i18n:check makes
-      // sure every language has the same number).
+      // Items are matched across languages by position, so every language
+      // lists the same number of items.
       for (const [index] of messages.en.About.skills[key].items.entries()) {
         const [skill] = await tx
           .insert(t.skills)
