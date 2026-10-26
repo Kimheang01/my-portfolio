@@ -32,6 +32,19 @@ yarn dev                     # http://localhost:3000
 4. **Colors** — the dark/light palettes and accent presets are in
    `lib/theme.ts`.
 
+## Admin dashboard
+
+`/admin` is where the site's content will be edited. You sign in with GitHub,
+and only one GitHub account (by its numeric id, `ADMIN_GITHUB_ID`) gets in;
+there's no sign-up and no password login.
+
+To set it up, create a GitHub OAuth app (GitHub → Settings → Developer
+settings → OAuth Apps → New OAuth App) with the callback URL
+`http://localhost:3000/api/auth/callback/github`, then fill in the admin
+section of `.env.local` (see `.env.example`) and run `yarn db:migrate`. For
+production, create a second OAuth app with your domain's callback URL and set
+the same variables on Vercel.
+
 ## Languages
 
 The site is in English (`/en`, the default) and Khmer (`/km`). Visitors switch
@@ -91,7 +104,8 @@ content/site.ts     hero frame settings
 messages/           interface text: en.json, km.json
 i18n/               language routing and translation loading (next-intl)
 proxy.ts            language redirects
-lib/                theme presets, fonts and helpers
+app/admin/          admin dashboard (its own layout; sign-in at /admin/login)
+lib/                theme presets, fonts, helpers and admin login (auth.ts)
 scripts/            seed (and its content in seed-data/), frame generators,
                     translation key check
 public/             images and hero frames
@@ -101,7 +115,8 @@ public/             images and hero frames
 
 Push to GitHub and import the repo on [Vercel](https://vercel.com/new), and
 set `DATABASE_URL` in the project's environment variables: the pages are
-built from the database, so the build needs it. Canonical URLs, hreflang
+built from the database, so the build needs it. Add the admin login
+variables from `.env.example` too, with `BETTER_AUTH_URL` set to your domain. Canonical URLs, hreflang
 links and the sitemap use your Vercel production domain. With a custom domain, set
 `NEXT_PUBLIC_SITE_URL` (e.g. `https://example.com`) in the Vercel project
 settings.
