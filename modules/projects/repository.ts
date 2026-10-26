@@ -3,6 +3,7 @@
 import "server-only";
 import { asc, eq, max } from "drizzle-orm";
 import { db } from "@/db";
+import { moveRow } from "@/db/reorder";
 import { projects, projectTranslations } from "@/db/schema";
 import { routing, type Locale } from "@/i18n/routing";
 import type { ProjectData, ProjectStatus, ProjectText } from "./schema";
@@ -125,23 +126,5 @@ export async function updateProject(id: number, data: ProjectData): Promise<bool
   });
 }
 
-/** Swaps a project with its neighbour and renumbers the list from 0. */
-export async function moveProject(id: number, direction: "up" | "down"): Promise<boolean> {
-  return db.transaction(async (tx) => {
-    const ids = (
-      await tx
-        .select({ id: projects.id })
-        .from(projects)
-        .orderBy(asc(projects.sortOrder), asc(projects.id))
-        .for("update")
-    ).map((row) => row.id);
-    const from = ids.indexOf(id);
-    const to = direction === "up" ? from - 1 : from + 1;
-    if (from === -1 || to < 0 || to >= ids.length) return false;
-    [ids[from], ids[to]] = [ids[to], ids[from]];
-    for (const [sortOrder, projectId] of ids.entries()) {
-      await tx.update(projects).set({ sortOrder }).where(eq(projects.id, projectId));
-    }
-    return true;
-  });
-}
+/** Moves a project one place up or down in the list. */
+export const moveProject = (id: number, direction: "up" | "down") => moveRow(projects, id, direction);

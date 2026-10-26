@@ -8,13 +8,9 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/authorization";
 import { PORTFOLIO_TAG } from "@/modules/portfolio/public";
-import { fieldErrors, projectInput, type FieldErrors, type ProjectStatus } from "./schema";
+import { invalid, type ActionState } from "@/modules/admin/validation";
+import { projectInput, type ProjectStatus } from "./schema";
 import * as service from "./service";
-
-export type SaveState =
-  | { ok: true; message: string }
-  | { ok: false; message: string; fieldErrors?: FieldErrors }
-  | null;
 
 // Arguments come from the browser, so ids are checked too.
 const projectId = z.number().int().positive();
@@ -27,16 +23,14 @@ const savedMessages: Record<ProjectStatus, string> = {
 
 export async function saveProject(
   id: number | null,
-  _previous: SaveState,
+  _previous: ActionState,
   input: unknown,
-): Promise<SaveState> {
+): Promise<ActionState> {
   await requireAdmin();
   const parsedId = id === null ? null : projectId.safeParse(id);
   if (parsedId && !parsedId.success) return { ok: false, message: "Unknown project." };
   const parsed = projectInput.safeParse(input);
-  if (!parsed.success) {
-    return { ok: false, message: "Check the highlighted fields.", fieldErrors: fieldErrors(parsed.error) };
-  }
+  if (!parsed.success) return invalid(parsed.error);
 
   const result = await service.saveProject(parsedId?.data ?? null, parsed.data);
   if (!result.ok) return result;

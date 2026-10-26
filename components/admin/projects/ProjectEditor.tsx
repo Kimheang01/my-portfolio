@@ -1,9 +1,11 @@
 "use client";
 
-import { startTransition, useActionState, useId, useState } from "react";
+import { startTransition, useActionState, useState } from "react";
+import { Field, LocaleTabs, StatusButtons, inputStyle, useFieldErrors } from "@/components/admin/form";
 import ProjectCard, { type ProjectCardLabels } from "@/components/ProjectCard";
 import { localeLabels, routing, type Locale } from "@/i18n/routing";
-import type { SaveState } from "@/modules/projects/actions";
+import { toSlug } from "@/lib/slug";
+import type { ActionState } from "@/modules/admin/validation";
 import {
   missingLocales,
   TRANSLATED_FIELDS,
@@ -19,7 +21,7 @@ export type EditorProject = Omit<ProjectInput, "status"> & {
   image: string | null;
 };
 
-type Action = (previous: SaveState, input: ProjectInput) => Promise<SaveState>;
+type Action = (previous: ActionState, input: ProjectInput) => Promise<ActionState>;
 
 const fieldLabels: Record<TranslatedField, { label: string; hint?: string; rows?: number }> = {
   title: { label: "Title" },
@@ -27,51 +29,6 @@ const fieldLabels: Record<TranslatedField, { label: string; hint?: string; rows?
   context: { label: "Context", hint: "Where and when, e.g. BS Express · 2026" },
   description: { label: "Description", rows: 4 },
 };
-
-const inputStyle =
-  "w-full rounded-xl border border-line bg-background px-3 py-2.5 text-sm transition outline-none focus:border-accent aria-[invalid=true]:border-rose-400";
-
-// "My App!" → "my-app"
-const toSlug = (title: string) =>
-  title
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
-
-function Field({
-  label,
-  hint,
-  error,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  error?: string;
-  children: (props: { id: string; "aria-invalid": boolean; "aria-describedby"?: string }) => React.ReactNode;
-}) {
-  const id = useId();
-  const describedBy = [hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(" ") || undefined;
-  return (
-    <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium">
-        {label}
-      </label>
-      {children({ id, "aria-invalid": Boolean(error), "aria-describedby": describedBy })}
-      {hint && (
-        <p id={`${id}-hint`} className="mt-1 text-xs text-muted">
-          {hint}
-        </p>
-      )}
-      {error && (
-        <p id={`${id}-error`} className="mt-1 text-xs text-rose-400">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
 
 /**
  * The project form: shared details, the text in each language (with a mark
@@ -93,14 +50,9 @@ export default function ProjectEditor({
   // New projects take their slug from the English title until it's edited.
   const [slugEdited, setSlugEdited] = useState(savedStatus !== "new");
   const [state, dispatch, pending] = useActionState(action, null);
-  // Fields changed since the last save attempt; their old errors are hidden.
-  const [edited, setEdited] = useState<Set<string>>(() => new Set());
-  const serverErrors = state && !state.ok ? (state.fieldErrors ?? {}) : {};
-  const errors = Object.fromEntries(Object.entries(serverErrors).filter(([key]) => !edited.has(key)));
+  const { errors, markEdited, reset } = useFieldErrors(state);
   const missing = missingLocales(draft.translations);
-  const tabId = useId();
 
-  const markEdited = (key: string) => setEdited((current) => (current.has(key) ? current : new Set(current).add(key)));
   const set = (changes: Partial<typeof draft>) => {
     Object.keys(changes).forEach(markEdited);
     setDraft((current) => ({ ...current, ...changes }));
@@ -115,7 +67,7 @@ export default function ProjectEditor({
     });
   };
   const submit = (status: ProjectStatus) => {
-    setEdited(new Set());
+    reset();
     startTransition(() => dispatch({ ...draft, status }));
   };
 
@@ -134,22 +86,6 @@ export default function ProjectEditor({
     tags: draft.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
     ...text,
   };
-
-  const buttons: { label: string; status: ProjectStatus; primary?: boolean }[] =
-    savedStatus === "published"
-      ? [
-          { label: "Save changes", status: "published", primary: true },
-          { label: "Unpublish", status: "draft" },
-        ]
-      : savedStatus === "archived"
-        ? [
-            { label: "Save", status: "archived", primary: true },
-            { label: "Restore as draft", status: "draft" },
-          ]
-        : [
-            { label: "Publish", status: "published", primary: true },
-            { label: "Save draft", status: "draft" },
-          ];
 
   return (
     <form
@@ -231,91 +167,31 @@ export default function ProjectEditor({
         </fieldset>
 
         {/* The text, one language at a time */}
-        <div className="rounded-2xl border border-line bg-surface">
-          <div role="tablist" aria-label="Language" className="flex gap-1 border-b border-line p-2">
-            {routing.locales.map((l) => (
-              <button
-                key={l}
-                type="button"
-                role="tab"
-                id={`${tabId}-${l}`}
-                aria-selected={locale === l}
-                aria-controls={`${tabId}-panel`}
-                onClick={() => setLocale(l)}
-                className="flex min-h-10 items-center gap-2 rounded-xl px-4 text-sm text-muted transition hover:text-foreground aria-selected:bg-accent/10 aria-selected:text-foreground"
-              >
-                {localeLabels[l].name}
-                {missing.includes(l) && (
-                  <span className="flex items-center gap-1 text-xs text-amber-400">
-                    <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-amber-400" />
-                    missing text
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-          <div
-            role="tabpanel"
-            id={`${tabId}-panel`}
-            aria-labelledby={`${tabId}-${locale}`}
-            lang={locale}
-            className="space-y-5 p-5"
-          >
-            {TRANSLATED_FIELDS.map((field) => {
-              const { label, hint, rows } = fieldLabels[field];
-              const error = errors[`translations.${locale}.${field}`];
-              return (
-                <Field key={`${locale}-${field}`} label={label} hint={hint} error={error}>
-                  {(props) =>
-                    rows ? (
-                      <textarea
-                        {...props}
-                        rows={rows}
-                        className={`${inputStyle} resize-y`}
-                        value={text[field]}
-                        onChange={(event) => setText(field, event.target.value)}
-                      />
-                    ) : (
-                      <input {...props} className={inputStyle} value={text[field]} onChange={(event) => setText(field, event.target.value)} />
-                    )
-                  }
-                </Field>
-              );
-            })}
-          </div>
-        </div>
+        <LocaleTabs locale={locale} onChange={setLocale} missing={missing}>
+          {TRANSLATED_FIELDS.map((field) => {
+            const { label, hint, rows } = fieldLabels[field];
+            const error = errors[`translations.${locale}.${field}`];
+            return (
+              <Field key={`${locale}-${field}`} label={label} hint={hint} error={error}>
+                {(props) =>
+                  rows ? (
+                    <textarea
+                      {...props}
+                      rows={rows}
+                      className={`${inputStyle} resize-y`}
+                      value={text[field]}
+                      onChange={(event) => setText(field, event.target.value)}
+                    />
+                  ) : (
+                    <input {...props} className={inputStyle} value={text[field]} onChange={(event) => setText(field, event.target.value)} />
+                  )
+                }
+              </Field>
+            );
+          })}
+        </LocaleTabs>
 
-        {/* Saving */}
-        <div className="flex flex-wrap items-center gap-3">
-          {buttons.map((button) => (
-            <button
-              key={button.label}
-              type="button"
-              disabled={pending}
-              onClick={() => submit(button.status)}
-              className={`inline-flex min-h-11 items-center rounded-full px-5 text-sm font-medium transition disabled:cursor-wait disabled:opacity-60 ${
-                button.primary
-                  ? "bg-foreground text-background hover:bg-accent"
-                  : "border border-line hover:border-foreground"
-              }`}
-            >
-              {button.label}
-            </button>
-          ))}
-          {savedStatus !== "archived" && savedStatus !== "new" && (
-            <button
-              type="button"
-              disabled={pending}
-              onClick={() => submit("archived")}
-              className="ml-auto inline-flex min-h-11 items-center rounded-full px-4 text-sm text-muted transition hover:text-rose-400 disabled:opacity-60"
-            >
-              Archive
-            </button>
-          )}
-          <p role="status" className={`basis-full text-sm ${state?.ok ? "text-emerald-400" : "text-rose-400"}`}>
-            {pending ? <span className="text-muted">Saving…</span> : state?.message}
-          </p>
-        </div>
+        <StatusButtons saved={savedStatus} state={state} pending={pending} onSave={submit} />
       </div>
 
       {/* Live preview of the public card */}

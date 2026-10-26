@@ -3,10 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Sections of the admin. Later phases add Profile, Skills, …
+// Sections of the admin.
 const links = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/projects", label: "Projects" },
+  { href: "/admin/experience", label: "Experience" },
+  { href: "/admin/skills", label: "Skills" },
+  { href: "/admin/profile", label: "Profile" },
+  { href: "/admin/settings", label: "Links & SEO" },
 ] as const;
 
 // A section stays highlighted on its sub-pages, e.g. /admin/projects/3/edit.
@@ -16,7 +20,7 @@ const isCurrent = (href: string, pathname: string) =>
 function NavList({ pathname }: { pathname: string | null }) {
   return (
     <nav aria-label="Admin">
-      <ul className="flex gap-1 md:flex-col">
+      <ul className="flex flex-wrap gap-1 md:flex-col">
         {links.map((link) => (
           <li key={link.href}>
             <Link
