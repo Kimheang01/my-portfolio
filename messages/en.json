@@ -1,12 +1,4 @@
 {
-  "Metadata": {
-    "title": "Hen Kimheang — Full-Stack Developer",
-    "description": "I build websites, REST APIs and iOS & Android apps, from PHP and MySQL to Vue.js, React Native and TypeScript."
-  },
-  "Common": {
-    "role": "Full-Stack Developer",
-    "location": "Phnom Penh, Cambodia"
-  },
   "Nav": {
     "label": "Main",
     "about": "About",
@@ -40,16 +32,9 @@
     }
   },
   "Hero": {
-    "roles": [
-      { "first": "Full-Stack", "second": "Developer" },
-      { "first": "Mobile", "second": "Developer" }
-    ],
     "introLabel": "~ Introduction",
-    "introHeading": "I build websites, REST APIs and iOS & Android apps",
-    "introText": "From database-driven PHP and MySQL sites to Vue.js front ends and cross-platform apps in React Native, Expo and TypeScript.",
     "hello": "Hello",
     "greeting": "I'm {name}",
-    "statement": "Full-Stack Developer with hands-on experience across web, back-end and mobile. Right now I'm building the customer and driver apps for BS Express, a parcel delivery company in Cambodia.",
     "cta": "View Experience",
     "scroll": "Scroll"
   },
@@ -57,41 +42,13 @@
     "eyebrow": "About",
     "title": "A little about me",
     "photoAlt": "Portrait of {name}",
-    "paragraphs": [
-      "I'm a Full-Stack Developer from Phnom Penh with hands-on experience across web, back-end and mobile: database-driven websites in PHP and MySQL, RESTful APIs connected to Vue.js front ends, and cross-platform iOS and Android apps built with React Native, Expo and TypeScript.",
-      "As a Mobile Developer at BS Express, I build the BS One and BS Driver apps on top of the company's NestJS REST API, part of a wider platform covering branch-to-branch transport, proof of delivery, returns and cash-on-delivery.",
-      "I studied Computer Science at the Royal University of Phnom Penh, and I'm keen to keep growing as an engineer across the full stack."
-    ],
     "facts": {
       "basedIn": "Based in",
       "studied": "Studied",
       "languages": "Languages"
     },
     "studiedValue": "{subject}, {school}",
-    "spokenLanguages": ["Khmer (Native)", "English (Intermediate)"],
-    "skillsTitle": "Skills & tools",
-    "skills": {
-      "frontend": {
-        "name": "Front-end",
-        "items": ["React", "Vue.js", "JavaScript", "TypeScript", "HTML", "CSS", "Tailwind CSS", "Bootstrap"]
-      },
-      "backend": {
-        "name": "Back-end",
-        "items": ["PHP", "RESTful API design"]
-      },
-      "mobile": {
-        "name": "Mobile",
-        "items": ["React Native", "Expo", "iOS & Android"]
-      },
-      "databases": {
-        "name": "Databases",
-        "items": ["MySQL", "PostgreSQL"]
-      },
-      "tools": {
-        "name": "Tools",
-        "items": ["Git", "GitHub"]
-      }
-    }
+    "skillsTitle": "Skills & tools"
   },
   "Experience": {
     "eyebrow": "Experience",
@@ -100,37 +57,7 @@
     "current": "<muted>Currently</muted> {title} <muted>at</muted> {company}",
     "education": "Education",
     "period": "{start} — {end}",
-    "present": "Present",
-    "items": {
-      "bsExpress": {
-        "title": "Mobile Developer",
-        "highlights": [
-          "BS One (iOS & Android): customer app for booking and tracking parcel deliveries and booking bus tickets.",
-          "BS Driver (iOS & Android): the app drivers use every day to collect parcels, create shipments between branches and deliver parcels to customers.",
-          "Connect both apps to the BS Express NestJS back end through REST APIs, as part of a platform covering manifests and bags, proof of delivery, returns, cash-on-delivery and driver commission settlements."
-        ]
-      },
-      "fastOne": {
-        "title": "IT Support Specialist",
-        "highlights": [
-          "Provided day-to-day desktop support, diagnosing and fixing hardware, software, network and operating system issues for staff.",
-          "Installed and configured printers, network devices and business software, and set up computers for new users.",
-          "Handled system updates, backups and antivirus management, and documented recurring issues in an internal knowledge base."
-        ]
-      },
-      "camlube": {
-        "title": "Web Developer",
-        "highlights": [
-          "Built a dynamic, database-driven website for showcasing and selling the company's products.",
-          "Developed product listing and detail pages organized by category, with content loaded from a MySQL database.",
-          "Created back-end features in PHP so staff could add, update and remove products without editing code."
-        ]
-      },
-      "rupp": {
-        "title": "Computer Science",
-        "description": "Plus Udemy courses in front-end (HTML5, CSS, Bootstrap, Tailwind, JavaScript, jQuery) and back-end (PHP, MySQL) web development."
-      }
-    }
+    "present": "Present"
   },
   "Projects": {
     "eyebrow": "Projects",
@@ -139,33 +66,7 @@
     "logoAlt": "{title} logo",
     "screenshotAlt": "Screenshot of {title}",
     "liveSite": "Live site",
-    "source": "Source",
-    "items": {
-      "bsOne": {
-        "title": "BS One",
-        "description": "iOS & Android app for BS Express customers to book and track parcel deliveries and book bus tickets.",
-        "type": "iOS & Android app",
-        "context": "BS Express · 2026"
-      },
-      "bsDriver": {
-        "title": "BS Driver",
-        "description": "The app BS Express drivers use every day to collect parcels, create shipments between branches and deliver parcels to customers.",
-        "type": "iOS & Android app",
-        "context": "BS Express · 2026"
-      },
-      "camlube": {
-        "title": "Camlube Product Website",
-        "description": "Database-driven website showcasing Camlube's products by category, with a PHP back end so staff can manage products without touching code.",
-        "type": "Website",
-        "context": "Camlube (Cambodia) · 2024–2025"
-      },
-      "scooter": {
-        "title": "Scooter E-commerce Platform",
-        "description": "University team project: an online scooter store with brand and color filters, sorting, color variants, a cart and customer accounts. I built the REST APIs and the Vue.js front end.",
-        "type": "Web app",
-        "context": "University project · 2025"
-      }
-    }
+    "source": "Source"
   },
   "Contact": {
     "eyebrow": "Contact",

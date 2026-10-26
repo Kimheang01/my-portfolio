@@ -1,7 +1,7 @@
-import type { SocialLabel } from "@/content/site";
+import type { SocialPlatform } from "@/modules/portfolio/types";
 
 // Outline brand icons (24×24, stroke-based) for the social links.
-const paths: Record<SocialLabel, React.ReactNode> = {
+const paths: Record<SocialPlatform, React.ReactNode> = {
   LinkedIn: (
     <>
       <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
@@ -31,10 +31,10 @@ const paths: Record<SocialLabel, React.ReactNode> = {
 };
 
 export default function SocialIcon({
-  label,
+  platform,
   className = "h-5 w-5",
 }: {
-  label: SocialLabel;
+  platform: SocialPlatform;
   className?: string;
 }) {
   return (
@@ -48,7 +48,7 @@ export default function SocialIcon({
       aria-hidden
       className={className}
     >
-      {paths[label]}
+      {paths[platform]}
     </svg>
   );
 }

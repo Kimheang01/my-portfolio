@@ -1,5 +1,5 @@
-import { useFormatter, useMessages, useTranslations } from "next-intl";
-import { site, type Job } from "@/content/site";
+import { useFormatter, useTranslations } from "next-intl";
+import type { Job } from "@/modules/portfolio/types";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
 
@@ -8,11 +8,10 @@ const isCurrent = (job: Job) => !job.end;
 // "YYYY-MM" → the first of that month in Cambodia time (the request time zone).
 const toDate = (month: string) => new Date(`${month}-01T00:00:00+07:00`);
 
-export default function Experience() {
+export default function Experience({ jobs }: { jobs: Job[] }) {
   const t = useTranslations("Experience");
   const format = useFormatter();
-  const items = useMessages().Experience.items;
-  const current = site.experience.find(isCurrent);
+  const current = jobs.find(isCurrent);
   const month = (value: string) => format.dateTime(toDate(value), { month: "short", year: "numeric" });
 
   return (
@@ -33,8 +32,8 @@ export default function Experience() {
                 </span>
                 <span className="text-sm">
                   {t.rich("current", {
-                    title: t(`items.${current.id}.title`),
-                    company: current.company,
+                    title: current.title,
+                    company: current.organization,
                     muted: (chunks) => <span className="text-muted">{chunks}</span>,
                   })}
                 </span>
@@ -45,13 +44,12 @@ export default function Experience() {
 
         {/* Right: timeline of cards */}
         <ol className="relative space-y-6 before:absolute before:top-3 before:bottom-3 before:left-[7px] before:w-px before:bg-gradient-to-b before:from-accent/60 before:via-line before:to-transparent">
-          {site.experience.map((job, i) => {
+          {jobs.map((job, i) => {
             const now = isCurrent(job);
             // Jobs list highlights; the education entry has a description.
-            const item: { description?: string; highlights?: string[] } = items[job.id];
-            const { description, highlights } = item;
+            const { description, highlights } = job;
             return (
-              <li key={job.id} className="relative pl-7 sm:pl-10">
+              <li key={job.slug} className="relative pl-7 sm:pl-10">
                 <span
                   className={`absolute top-7 left-0 h-[15px] w-[15px] sm:top-8 rounded-full border-2 ${
                     now
@@ -64,11 +62,11 @@ export default function Experience() {
                     <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
                       <div>
                         <p className="font-mono text-xs tracking-widest text-accent uppercase">
-                          {job.kind === "education" ? t("education") : job.company}
+                          {job.kind === "education" ? t("education") : job.organization}
                         </p>
-                        <h3 className="mt-2 text-h3 font-semibold">{t(`items.${job.id}.title`)}</h3>
+                        <h3 className="mt-2 text-h3 font-semibold">{job.title}</h3>
                         {job.kind === "education" && (
-                          <p className="mt-1 text-muted">{job.company}</p>
+                          <p className="mt-1 text-muted">{job.organization}</p>
                         )}
                       </div>
                       <span
@@ -86,7 +84,7 @@ export default function Experience() {
                     {description && (
                       <p className="mt-4 text-body text-muted">{description}</p>
                     )}
-                    {highlights && (
+                    {highlights.length > 0 && (
                       <ul className="mt-4 space-y-2.5 sm:mt-5 sm:space-y-3">
                         {highlights.map((item) => (
                           <li key={item} className="flex gap-3 text-body text-muted">
@@ -96,7 +94,7 @@ export default function Experience() {
                         ))}
                       </ul>
                     )}
-                    {job.tags && (
+                    {job.tags.length > 0 && (
                       <ul className="mt-6 flex flex-wrap gap-2 border-t border-line pt-5">
                         {job.tags.map((tag) => (
                           <li

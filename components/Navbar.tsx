@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { site } from "@/content/site";
 import { LanguageMenu, LanguageToggle } from "./LanguageSwitcher";
 import ThemeSwitcher, { ThemeControls } from "./ThemeSwitcher";
 
@@ -29,7 +28,7 @@ function MenuIcon({ open }: { open: boolean }) {
   );
 }
 
-export default function Navbar() {
+export default function Navbar({ name }: { name: string }) {
   const t = useTranslations("Nav");
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -110,7 +109,7 @@ export default function Navbar() {
       >
         <nav aria-label={t("label")} className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <a href="#home" className="font-semibold tracking-tight" onClick={() => setOpen(false)}>
-            {site.name}
+            {name}
           </a>
 
           <div className="hidden items-center gap-6 md:flex lg:gap-8">

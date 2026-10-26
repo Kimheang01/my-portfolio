@@ -8,20 +8,27 @@ the section stays pinned and plays through the frames like a video.
 
 ## Getting started
 
+The content is in a PostgreSQL database (Neon works well), so set one up first:
+
 ```bash
 yarn
-yarn dev        # http://localhost:3000
+cp .env.example .env.local   # then set DATABASE_URL in .env.local
+yarn db:migrate              # creates the tables
+yarn db:seed                 # fills them with the content in scripts/seed-data/
+yarn dev                     # http://localhost:3000
 ```
 
 ## Making it yours
 
-1. **Text** — every sentence on the site is in `messages/en.json` (English)
-   and `messages/km.json` (Khmer). See [Languages](#languages).
-2. **Data** — `content/site.ts` holds your name, email, social links, job
-   dates, project logos, tags and links. Each job and project has an `id` that
-   matches its text in the message files.
-3. **Project screenshots** — put images in `public/images/projects/` and set
-   `image: "/images/projects/your-file.png"` on a project.
+1. **Content** — your profile, hero text, about, skills, experience,
+   projects, social links and the SEO title and description are in the
+   database, in English and Khmer. Until the admin dashboard is ready, edit
+   them with `yarn db:studio`, then rebuild (`yarn build`, or redeploy).
+2. **Interface text** — headings, labels and buttons are in
+   `messages/en.json` (English) and `messages/km.json` (Khmer). See
+   [Languages](#languages).
+3. **Images** — files in `public/` are listed in the `media` table; a
+   project's logo and screenshot and the profile photo point to a row there.
 4. **Colors** — the dark/light palettes and accent presets are in
    `lib/theme.ts`.
 
@@ -32,18 +39,19 @@ with the globe button in the navigation (or the toggle in the mobile menu),
 and their choice is remembered in a cookie, so `/` opens their language.
 Section links such as `/km/projects` open the page at that section.
 
-- **Edit text:** change the same key in both `messages/en.json` and
-  `messages/km.json`. Keep technology names, company names and job titles
-  like "Full-Stack Developer" in English in both files.
-- **Add a job or project:** add it to `content/site.ts` with a new `id`, then
-  add `Experience.items.<id>` or `Projects.items.<id>` to both message files
-  (copy an existing entry for the shape).
+- **Edit interface text:** change the same key in both `messages/en.json`
+  and `messages/km.json`.
+- **Edit content:** each table with text has a `*_translations` table with
+  one row per language (`en`, `km`). Keep technology names, company names
+  and job titles like "Full-Stack Developer" in English in both.
 - **Check:** `yarn i18n:check` lists any key that is missing or extra in
   `km.json`. `yarn tsc --noEmit` catches keys used in code that don't exist in
   `en.json`.
 - **Add another language:** add its code to `locales` in `i18n/routing.ts`
-  (with a label in `localeLabels`), create `messages/<code>.json` from
-  `en.json`, and add the code to the section regex in `proxy.ts`.
+  (with a label in `localeLabels`) and to `localeEnum` in
+  `db/schema/content.ts` (then `yarn db:generate`), create
+  `messages/<code>.json` from `en.json`, and add the code to the section
+  regex in `proxy.ts`.
 
 Khmer uses Noto Sans Khmer, which only downloads when Khmer text is on screen.
 Khmer-specific line heights are under `:lang(km)` in `app/globals.css`.
@@ -73,22 +81,27 @@ go back to those, set `frameCount: 120` and the `.svg` extension in
 ## Project structure
 
 ```
-app/[locale]/   layout and page, rendered once per language
-app/            global styles, 404 page, sitemap and robots.txt
-components/     ScrollHero, Navbar, About, …, LanguageSwitcher, ThemeSwitcher
-content/site.ts personal data and links (no translated text)
-messages/       translations: en.json, km.json
-i18n/           language routing and translation loading (next-intl)
-proxy.ts        language redirects
-lib/            theme presets, fonts and helpers
-scripts/        frame generators and the translation key check
-public/         images and hero frames
+app/[locale]/       layout and page, rendered once per language
+app/                global styles, 404 page, sitemap and robots.txt
+components/         ScrollHero, Navbar, About, …, LanguageSwitcher, ThemeSwitcher
+modules/portfolio/  reads the site's content from the database
+db/                 database schema and connection (Drizzle ORM)
+drizzle/            database migrations (yarn db:generate)
+content/site.ts     hero frame settings
+messages/           interface text: en.json, km.json
+i18n/               language routing and translation loading (next-intl)
+proxy.ts            language redirects
+lib/                theme presets, fonts and helpers
+scripts/            seed (and its content in seed-data/), frame generators,
+                    translation key check
+public/             images and hero frames
 ```
 
 ## Deploying
 
-Push to GitHub and import the repo on [Vercel](https://vercel.com/new).
-No configuration is needed: canonical URLs, hreflang links and the sitemap
-use your Vercel production domain. With a custom domain, set
+Push to GitHub and import the repo on [Vercel](https://vercel.com/new), and
+set `DATABASE_URL` in the project's environment variables: the pages are
+built from the database, so the build needs it. Canonical URLs, hreflang
+links and the sitemap use your Vercel production domain. With a custom domain, set
 `NEXT_PUBLIC_SITE_URL` (e.g. `https://example.com`) in the Vercel project
 settings.
