@@ -1,9 +1,11 @@
 // What the admin can do with projects. Every function checks requireAdmin()
 // itself, so a page or action can't forget to.
 import "server-only";
+import { isUniqueViolation } from "@/db/errors";
 import { requireAdmin } from "@/lib/authorization";
+import type { FieldErrors } from "@/modules/admin/validation";
 import * as repository from "./repository";
-import type { FieldErrors, ProjectData } from "./schema";
+import type { ProjectData } from "./schema";
 
 export type { AdminProject } from "./repository";
 
@@ -43,10 +45,4 @@ export async function saveProject(id: number | null, data: ProjectData): Promise
 export async function moveProject(id: number, direction: "up" | "down") {
   await requireAdmin();
   return repository.moveProject(id, direction);
-}
-
-// Postgres reports a duplicate value as error 23505; Drizzle wraps it.
-function isUniqueViolation(error: unknown, constraint: string) {
-  const cause = (error as { cause?: { code?: string; constraint_name?: string } })?.cause;
-  return cause?.code === "23505" && cause.constraint_name === constraint;
 }

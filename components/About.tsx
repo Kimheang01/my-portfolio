@@ -1,58 +1,9 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import type { Job, Profile, SkillGroup, SkillIcon } from "@/modules/portfolio/types";
+import type { Job, Profile, SkillGroup } from "@/modules/portfolio/types";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
-
-// Outline icons (24×24) for each skill group.
-const groupIcons: Record<SkillIcon, React.ReactNode> = {
-  frontend: (
-    <>
-      <path d="m16 18 6-6-6-6" />
-      <path d="m8 6-6 6 6 6" />
-    </>
-  ),
-  backend: (
-    <>
-      <rect x="2" y="2" width="20" height="8" rx="2" />
-      <rect x="2" y="14" width="20" height="8" rx="2" />
-      <path d="M6 6h.01M6 18h.01" />
-    </>
-  ),
-  mobile: (
-    <>
-      <rect x="5" y="2" width="14" height="20" rx="2" />
-      <path d="M12 18h.01" />
-    </>
-  ),
-  databases: (
-    <>
-      <ellipse cx="12" cy="5" rx="9" ry="3" />
-      <path d="M3 5v14a9 3 0 0 0 18 0V5" />
-      <path d="M3 12a9 3 0 0 0 18 0" />
-    </>
-  ),
-  tools: (
-    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-  ),
-};
-
-function GroupIcon({ icon }: { icon: SkillIcon }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-5 w-5"
-      aria-hidden
-    >
-      {groupIcons[icon]}
-    </svg>
-  );
-}
+import SkillIcon from "./SkillIcon";
 
 export default function About({
   profile,
@@ -142,7 +93,7 @@ export default function About({
                 <div className="group h-full rounded-2xl border border-line bg-surface p-4 transition min-[400px]:p-5 duration-300 hover:border-accent/40 hover:bg-surface-hover">
                   <div className="flex items-center gap-3">
                     <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/10 text-accent transition group-hover:bg-accent/20">
-                      <GroupIcon icon={group.icon} />
+                      <SkillIcon icon={group.icon} />
                     </span>
                     <p className="font-medium">{group.name}</p>
                   </div>

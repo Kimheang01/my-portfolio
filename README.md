@@ -22,10 +22,9 @@ yarn dev                     # http://localhost:3000
 
 1. **Content** — your profile, hero text, about, skills, experience,
    projects, social links and the SEO title and description are in the
-   database, in English and Khmer. Projects are edited in the
-   [admin dashboard](#admin-dashboard) and show on the site as soon as they're
-   published. The rest isn't in the dashboard yet: edit it with
-   `yarn db:studio`, then rebuild (`yarn build`, or redeploy).
+   database, in English and Khmer. Edit them in the
+   [admin dashboard](#admin-dashboard); changes show on the site as soon as
+   they're saved or published, without a redeploy.
 2. **Interface text** — headings, labels and buttons are in
    `messages/en.json` (English) and `messages/km.json` (Khmer). See
    [Languages](#languages).
@@ -36,7 +35,7 @@ yarn dev                     # http://localhost:3000
 
 ## Admin dashboard
 
-`/admin` is where the site's content is edited (projects so far). You sign in with GitHub,
+`/admin` is where the site's content is edited. You sign in with GitHub,
 and only one GitHub account (by its numeric id, `ADMIN_GITHUB_ID`) gets in;
 there's no sign-up and no password login.
 
