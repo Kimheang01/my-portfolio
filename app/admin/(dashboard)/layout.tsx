@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import AdminIdentity from "@/components/admin/AdminIdentity";
-import AdminNav from "@/components/admin/AdminNav";
+import AdminNav, { AdminNavFallback } from "@/components/admin/AdminNav";
 import AdminThemeButton from "@/components/admin/AdminThemeButton";
 
 // Sidebar and header around every signed-in admin page. Only the part that
@@ -12,7 +12,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <p className="mb-3 px-3 font-semibold tracking-tight md:mb-6">
           Portfolio <span className="text-muted">admin</span>
         </p>
-        <AdminNav />
+        <Suspense fallback={<AdminNavFallback />}>
+          <AdminNav />
+        </Suspense>
       </aside>
 
       <div className="min-w-0">

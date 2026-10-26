@@ -13,11 +13,14 @@ const sectionPath = /^\/(?:([a-z]{2})\/)?(about|experience|projects|contact)\/?$
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // The admin has no language prefix. Without a session cookie it's straight
-  // to the login page; whether the session is valid, and the admin's, is
-  // checked on the server by requireAdmin() (lib/authorization.ts).
+  // The admin has no language prefix. Opening an admin page without a
+  // session cookie goes straight to the login page; whether the session is
+  // valid, and the admin's, is checked on the server by requireAdmin()
+  // (lib/authorization.ts). Only page loads are redirected: a server action
+  // (a POST) sent here would fail, so it goes on to its own requireAdmin().
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
-    if (pathname !== "/admin/login" && !getSessionCookie(request)) {
+    const pageLoad = request.method === "GET" || request.method === "HEAD";
+    if (pageLoad && pathname !== "/admin/login" && !getSessionCookie(request)) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
     return NextResponse.next();

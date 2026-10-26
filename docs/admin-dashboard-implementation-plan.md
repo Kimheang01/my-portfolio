@@ -12,7 +12,7 @@ this plan wins: it reflects how the existing code actually works.
 | 1 | Data foundation | Done (b8d3479) |
 | 2 | Public site reads from the database | Done |
 | 3 | Login and admin shell | Done |
-| 4 | Projects end to end | Not started |
+| 4 | Projects end to end | Done |
 | 5 | Other content | Not started |
 | 6 | Media | Not started |
 | 7 | Hardening | Not started |
