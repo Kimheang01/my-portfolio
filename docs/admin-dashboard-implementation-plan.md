@@ -11,7 +11,7 @@ this plan wins: it reflects how the existing code actually works.
 | 0 | Prerequisites | Language PR merged (#5); review fixes still open (separate branch) |
 | 1 | Data foundation | Done (b8d3479) |
 | 2 | Public site reads from the database | Done |
-| 3 | Login and admin shell | Not started |
+| 3 | Login and admin shell | Done |
 | 4 | Projects end to end | Not started |
 | 5 | Other content | Not started |
 | 6 | Media | Not started |
@@ -39,7 +39,7 @@ Update this table whenever a phase starts, finishes or is approved.
 | Deferred | Project gallery, full descriptions, project detail pages, blog, inbox, analytics |
 | Branches | All phases on `feat/admin-dashboard`, one commit per phase; unrelated fixes on their own branches |
 
-Hosting: Vercel (confirmed). Still open: media provider, GitHub account ID.
+Hosting: Vercel (confirmed). Admin GitHub account: `Kimheang01`, id 172888373. Still open: media provider.
 
 ## Phases
 
@@ -73,7 +73,8 @@ Hosting: Vercel (confirmed). Still open: media provider, GitHub account ID.
 ### Phase 3 — Login and admin shell
 - `lib/auth.ts` (Better Auth, GitHub, Drizzle adapter, no email sign-up,
   allowlist hook), `lib/authorization.ts` (`requireAdmin()`, server-only),
-  `app/api/auth/[...all]/route.ts`, `lib/auth-client.ts`.
+  `app/api/auth/[...all]/route.ts`, `lib/auth-actions.ts` (sign in and out
+  as server actions, so no auth client ships to the browser).
 - `app/admin/layout.tsx`: its own root layout reusing `themeCss()`,
   `themeInitScript`, `ThemeSync`, `fontVariables`; robots noindex.
 - `app/admin/login/page.tsx`, `(dashboard)` layout with sidebar and header,
