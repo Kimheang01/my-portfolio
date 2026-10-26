@@ -20,7 +20,15 @@ export default function Projects({ projects }: { projects: Project[] }) {
       <div className="grid gap-6 md:grid-cols-2">
         {projects.map((project, i) => (
           <Reveal key={project.slug} delay={(i % 2) * 0.1} className="h-full">
-            <ProjectCard project={project} />
+            <ProjectCard
+              project={project}
+              labels={{
+                liveSite: t("liveSite"),
+                source: t("source"),
+                logoAlt: t("logoAlt", { title: project.title }),
+                screenshotAlt: t("screenshotAlt", { title: project.title }),
+              }}
+            />
           </Reveal>
         ))}
       </div>
