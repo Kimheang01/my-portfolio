@@ -18,6 +18,9 @@ yarn db:seed                 # fills them with the content in scripts/seed-data/
 yarn dev                     # http://localhost:3000
 ```
 
+Setting up again on another computer, with the existing database? See
+[docs/new-computer-setup.md](docs/new-computer-setup.md).
+
 ## Making it yours
 
 1. **Content** — your profile, hero text, about, skills, experience,
