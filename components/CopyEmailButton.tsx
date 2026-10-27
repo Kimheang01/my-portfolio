@@ -21,6 +21,9 @@ export default function CopyEmailButton({
   }, [status]);
 
   const copy = async () => {
+    // Clear the last result first, so trying again restarts its timer and
+    // screen readers announce it again even if it's the same message.
+    setStatus("idle");
     try {
       await navigator.clipboard.writeText(email);
       setStatus("copied");
