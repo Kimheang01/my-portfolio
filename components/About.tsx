@@ -1,75 +1,29 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { site, type SkillGroup } from "@/content/site";
+import type { Job, Profile, SkillGroup } from "@/modules/portfolio/types";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
+import SkillIcon from "./SkillIcon";
 
-// Outline icons (24×24) for each skill group.
-const groupIcons: Record<SkillGroup, React.ReactNode> = {
-  frontend: (
-    <>
-      <path d="m16 18 6-6-6-6" />
-      <path d="m8 6-6 6 6 6" />
-    </>
-  ),
-  backend: (
-    <>
-      <rect x="2" y="2" width="20" height="8" rx="2" />
-      <rect x="2" y="14" width="20" height="8" rx="2" />
-      <path d="M6 6h.01M6 18h.01" />
-    </>
-  ),
-  mobile: (
-    <>
-      <rect x="5" y="2" width="14" height="20" rx="2" />
-      <path d="M12 18h.01" />
-    </>
-  ),
-  databases: (
-    <>
-      <ellipse cx="12" cy="5" rx="9" ry="3" />
-      <path d="M3 5v14a9 3 0 0 0 18 0V5" />
-      <path d="M3 12a9 3 0 0 0 18 0" />
-    </>
-  ),
-  tools: (
-    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-  ),
-};
-
-function GroupIcon({ group }: { group: SkillGroup }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-5 w-5"
-      aria-hidden
-    >
-      {groupIcons[group]}
-    </svg>
-  );
-}
-
-export default function About() {
+export default function About({
+  profile,
+  skillGroups,
+  education,
+}: {
+  profile: Profile;
+  skillGroups: SkillGroup[];
+  /** Shown as "Studied" in the profile card */
+  education?: Job;
+}) {
   const t = useTranslations("About");
-  const tCommon = useTranslations("Common");
-  const tExperience = useTranslations("Experience");
-  const [lead, ...rest] = t.raw("paragraphs") as string[];
-  const education = site.experience.find((item) => item.kind === "education");
+  const [lead, ...rest] = profile.aboutParagraphs;
   const facts = [
-    { label: t("facts.basedIn"), value: tCommon("location") },
+    { label: t("facts.basedIn"), value: profile.location },
     education && {
       label: t("facts.studied"),
-      value: t("studiedValue", {
-        subject: tExperience(`items.${education.id}.title`),
-        school: education.company,
-      }),
+      value: t("studiedValue", { subject: education.title, school: education.organization }),
     },
-    { label: t("facts.languages"), value: (t.raw("spokenLanguages") as string[]).join(" · ") },
+    { label: t("facts.languages"), value: profile.spokenLanguages.join(" · ") },
   ].filter(Boolean) as { label: string; value: string }[];
 
   return (
@@ -85,17 +39,19 @@ export default function About() {
               className="pointer-events-none absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-accent/25 blur-3xl"
             />
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
-              <Image
-                src={site.photo}
-                alt={t("photoAlt", { name: site.name })}
-                fill
-                sizes="(min-width: 1024px) 380px, (min-width: 640px) 240px, 100vw"
-                className="object-cover"
-              />
+              {profile.photo && (
+                <Image
+                  src={profile.photo}
+                  alt={t("photoAlt", { name: profile.name })}
+                  fill
+                  sizes="(min-width: 1024px) 380px, (min-width: 640px) 240px, 100vw"
+                  className="object-cover"
+                />
+              )}
               <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background/90 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-5">
-                <p className="text-xl font-semibold">{site.name}</p>
-                <p className="text-sm text-accent">{tCommon("role")}</p>
+                <p className="text-xl font-semibold">{profile.name}</p>
+                <p className="text-sm text-accent">{profile.role}</p>
               </div>
             </div>
             <dl className="relative space-y-3 px-3 pt-5 pb-3 text-sm sm:pt-3 lg:pt-5">
@@ -126,20 +82,20 @@ export default function About() {
             </h3>
           </Reveal>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            {site.skills.map((group, i) => {
-              const items = t.raw(`skills.${group}.items`) as string[];
+            {skillGroups.map((group, i) => {
+              const items = group.skills;
               return (
               <Reveal
-                key={group}
+                key={group.key}
                 delay={0.1 + i * 0.05}
                 className={items.length > 4 ? "sm:col-span-2" : ""}
               >
                 <div className="group h-full rounded-2xl border border-line bg-surface p-4 transition min-[400px]:p-5 duration-300 hover:border-accent/40 hover:bg-surface-hover">
                   <div className="flex items-center gap-3">
                     <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/10 text-accent transition group-hover:bg-accent/20">
-                      <GroupIcon group={group} />
+                      <SkillIcon icon={group.icon} />
                     </span>
-                    <p className="font-medium">{t(`skills.${group}.name`)}</p>
+                    <p className="font-medium">{group.name}</p>
                   </div>
                   <ul className="mt-4 flex flex-wrap gap-2">
                     {items.map((item) => (
