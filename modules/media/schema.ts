@@ -29,6 +29,16 @@ export const registerInput = z.object({
   height: dimension,
 });
 
+/** Public Blob URLs look like https://<store>.public.blob.vercel-storage.com/… */
+export function isBlobUrl(url: string) {
+  try {
+    const { protocol, hostname } = new URL(url);
+    return protocol === "https:" && hostname.endsWith(".public.blob.vercel-storage.com");
+  } catch {
+    return false;
+  }
+}
+
 /** A chosen image, or none. */
 export const mediaId = z.number().int().positive().nullable();
 

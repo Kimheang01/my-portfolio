@@ -5,6 +5,7 @@
 import { refresh, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { logAdminChange } from "@/lib/audit";
 import { requireAdmin } from "@/lib/authorization";
 import { invalid, type ActionState, type ContentStatus } from "@/modules/admin/validation";
 import { PORTFOLIO_TAG } from "@/modules/portfolio/public";
@@ -33,6 +34,7 @@ export async function saveExperience(
 
   const result = await service.saveExperience(parsedId?.data ?? null, parsed.data);
   if (!result.ok) return result;
+  logAdminChange("experience.save", { id: result.id, status: parsed.data.status });
 
   updateTag(PORTFOLIO_TAG);
   if (id === null) redirect(`/admin/experience/${result.id}/edit?created=1`);
@@ -45,6 +47,7 @@ export async function moveExperience(id: number, direction: "up" | "down") {
   const parsedId = entryId.parse(id);
   const parsedDirection = z.enum(["up", "down"]).parse(direction);
   if (await service.moveExperience(parsedId, parsedDirection)) {
+    logAdminChange("experience.move", { id: parsedId, direction: parsedDirection });
     updateTag(PORTFOLIO_TAG);
     refresh();
   }

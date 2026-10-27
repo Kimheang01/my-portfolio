@@ -3,6 +3,7 @@
 // The Links & SEO form's server action: check the admin, check the input,
 // save, then refresh the public site and the admin page.
 import { refresh, updateTag } from "next/cache";
+import { logAdminChange } from "@/lib/audit";
 import { requireAdmin } from "@/lib/authorization";
 import { invalid, type ActionState } from "@/modules/admin/validation";
 import { PORTFOLIO_TAG } from "@/modules/portfolio/public";
@@ -14,6 +15,7 @@ export async function saveSettings(_previous: ActionState, input: unknown): Prom
   const parsed = settingsInput.safeParse(input);
   if (!parsed.success) return invalid(parsed.error);
   await service.saveSettings(parsed.data);
+  logAdminChange("settings.save");
   updateTag(PORTFOLIO_TAG);
   refresh();
   return { ok: true, message: "Saved. It's on the site now." };

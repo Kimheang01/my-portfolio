@@ -5,16 +5,6 @@ import { BlobAccessError, BlobNotFoundError, del, head } from "@vercel/blob";
 
 export const blobConfigured = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
-/** Public Blob URLs look like https://<store>.public.blob.vercel-storage.com/… */
-export function isBlobUrl(url: string) {
-  try {
-    const { protocol, hostname } = new URL(url);
-    return protocol === "https:" && hostname.endsWith(".public.blob.vercel-storage.com");
-  } catch {
-    return false;
-  }
-}
-
 /**
  * The file's details from this project's Blob store, or null if it isn't
  * there. A file from any other store comes back null too, so only uploads
