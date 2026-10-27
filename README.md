@@ -43,7 +43,7 @@ Section links such as `/km/projects` open the page at that section.
   `en.json`.
 - **Add another language:** add its code to `locales` in `i18n/routing.ts`
   (with a label in `localeLabels`), create `messages/<code>.json` from
-  `en.json`, and add the code to the section regex in `proxy.ts`.
+  `en.json`. Section links such as `/<code>/projects` then work by themselves.
 
 Khmer uses Noto Sans Khmer, which only downloads when Khmer text is on screen.
 Khmer-specific line heights are under `:lang(km)` in `app/globals.css`.
