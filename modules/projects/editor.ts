@@ -34,8 +34,8 @@ export const newProject: EditorProject = {
   href: "",
   repo: "",
   tags: "",
-  logo: null,
-  image: null,
+  logoMediaId: null,
+  imageMediaId: null,
   translations: Object.fromEntries(routing.locales.map((locale) => [locale, blankText])) as Record<
     Locale,
     typeof blankText
@@ -51,8 +51,8 @@ export function toEditorProject(project: AdminProject): EditorProject {
     href: project.href ?? "",
     repo: project.repo ?? "",
     tags: project.tags.join(", "),
-    logo: project.logo,
-    image: project.image,
+    logoMediaId: project.logoMediaId,
+    imageMediaId: project.imageMediaId,
     translations: project.translations,
   };
 }

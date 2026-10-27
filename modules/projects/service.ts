@@ -1,7 +1,7 @@
 // What the admin can do with projects. Every function checks requireAdmin()
 // itself, so a page or action can't forget to.
 import "server-only";
-import { isUniqueViolation } from "@/db/errors";
+import { isMissingReference, isUniqueViolation } from "@/db/errors";
 import { requireAdmin } from "@/lib/authorization";
 import type { FieldErrors } from "@/modules/admin/validation";
 import * as repository from "./repository";
@@ -38,6 +38,8 @@ export async function saveProject(id: number | null, data: ProjectData): Promise
         fieldErrors: { slug: "Another project already uses this slug." },
       };
     }
+    // The chosen image was deleted from the media library meanwhile.
+    if (isMissingReference(error)) return { ok: false, message: "One of the chosen images no longer exists. Choose it again." };
     throw error;
   }
 }

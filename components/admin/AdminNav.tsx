@@ -11,6 +11,7 @@ const links = [
   { href: "/admin/skills", label: "Skills" },
   { href: "/admin/profile", label: "Profile" },
   { href: "/admin/settings", label: "Links & SEO" },
+  { href: "/admin/media", label: "Media" },
 ] as const;
 
 // A section stays highlighted on its sub-pages, e.g. /admin/projects/3/edit.

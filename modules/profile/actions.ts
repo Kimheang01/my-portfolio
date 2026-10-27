@@ -13,7 +13,8 @@ export async function saveProfile(_previous: ActionState, input: unknown): Promi
   await requireAdmin();
   const parsed = profileInput.safeParse(input);
   if (!parsed.success) return invalid(parsed.error);
-  await service.saveProfile(parsed.data);
+  const error = await service.saveProfile(parsed.data);
+  if (error) return { ok: false, message: error };
   updateTag(PORTFOLIO_TAG);
   refresh();
   return { ok: true, message: "Saved. It's on the site now." };

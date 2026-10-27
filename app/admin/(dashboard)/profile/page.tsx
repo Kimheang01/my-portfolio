@@ -3,13 +3,14 @@ import { Suspense } from "react";
 import ProfileEditor from "@/components/admin/profile/ProfileEditor";
 import { routing, type Locale } from "@/i18n/routing";
 import type { ProfileText } from "@/modules/profile/schema";
+import { getMediaLibrary } from "@/modules/media/service";
 import { saveProfile } from "@/modules/profile/actions";
 import { getProfile } from "@/modules/profile/service";
 
 export const metadata: Metadata = { title: "Profile" };
 
 async function Editor() {
-  const profile = await getProfile();
+  const [profile, media] = await Promise.all([getProfile(), getMediaLibrary()]);
   // Lists are edited as text: paragraphs with blank lines between, languages one per line.
   const translations = Object.fromEntries(
     routing.locales.map((locale) => {
@@ -23,8 +24,8 @@ async function Editor() {
 
   return (
     <ProfileEditor
-      profile={{ name: profile.name, email: profile.email, translations }}
-      photo={profile.photo}
+      profile={{ name: profile.name, email: profile.email, photoMediaId: profile.photoMediaId, translations }}
+      media={media}
       action={saveProfile}
     />
   );

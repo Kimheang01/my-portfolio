@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import ProjectEditor from "@/components/admin/projects/ProjectEditor";
 import { requireAdmin } from "@/lib/authorization";
+import { getMediaLibrary } from "@/modules/media/service";
 import { saveProject } from "@/modules/projects/actions";
 import { getCardLabels, newProject } from "@/modules/projects/editor";
 
@@ -10,7 +11,14 @@ export const metadata: Metadata = { title: "New project" };
 
 async function Editor() {
   await requireAdmin();
-  return <ProjectEditor project={newProject} action={saveProject.bind(null, null)} cardLabels={await getCardLabels()} />;
+  return (
+    <ProjectEditor
+      project={newProject}
+      action={saveProject.bind(null, null)}
+      cardLabels={await getCardLabels()}
+      media={await getMediaLibrary()}
+    />
+  );
 }
 
 export default function NewProjectPage() {

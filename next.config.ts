@@ -7,6 +7,10 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
+  images: {
+    // Images uploaded in the admin, stored in Vercel Blob under portfolio/.
+    remotePatterns: [{ protocol: "https", hostname: "*.public.blob.vercel-storage.com", pathname: "/portfolio/**" }],
+  },
   partialPrefetching: true,
   experimental: {
     // Unknown URLs and locales get app/global-not-found.tsx.
