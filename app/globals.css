@@ -76,8 +76,13 @@ body {
   display: inline;
 }
 
-:lang(km) .text-xs {
-  font-size: 0.8125rem;
+/* Khmer gets slightly larger small text and looser tracking. These change
+   the variables Tailwind's classes read, rather than the classes, so
+   screen-size classes such as lg:text-sm still win where they're used. */
+:lang(km) {
+  --text-xs: 0.8125rem;
+  --tracking-widest: 0.05em;
+  --tracking-tight: 0;
 }
 
 :lang(km) .text-name,
@@ -95,14 +100,6 @@ body {
 :lang(km) .text-lead,
 :lang(km) .text-body {
   line-height: 1.85;
-}
-
-:lang(km) .tracking-widest {
-  letter-spacing: 0.05em;
-}
-
-:lang(km) .tracking-tight {
-  letter-spacing: 0;
 }
 
 ::selection {
