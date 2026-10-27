@@ -12,6 +12,7 @@ import {
   text,
   type ContentStatus,
 } from "@/modules/admin/validation";
+import { mediaId } from "@/modules/media/schema";
 
 export type ProjectStatus = ContentStatus;
 
@@ -40,6 +41,9 @@ export const projectInput = z
     href: httpsLink,
     repo: httpsLink,
     tags,
+    /** Images from the media library */
+    logoMediaId: mediaId,
+    imageMediaId: mediaId,
     status: z.enum(CONTENT_STATUSES),
     translations: perLocale(projectText),
   })

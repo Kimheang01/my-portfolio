@@ -14,7 +14,7 @@ this plan wins: it reflects how the existing code actually works.
 | 3 | Login and admin shell | Done |
 | 4 | Projects end to end | Done |
 | 5 | Other content | Done |
-| 6 | Media | Not started |
+| 6 | Media | Done |
 | 7 | Hardening | Not started |
 
 Update this table whenever a phase starts, finishes or is approved.
@@ -34,12 +34,12 @@ Update this table whenever a phase starts, finishes or is approved.
 | Login | Better Auth + GitHub OAuth, one allowlisted GitHub account ID |
 | Validation | zod on every server action |
 | Forms / UI | React 19 `useActionState` + Tailwind + native `<dialog>`; no shadcn or React Hook Form unless needed |
-| Media | Cloudinary recommended (decide before Phase 6); existing `/public` images are `local` media rows |
+| Media | Vercel Blob (chosen in Phase 6: no extra account on Vercel, and next/image already resizes); existing `/public` images are `local` media rows |
 | Description format | Plain text |
 | Deferred | Project gallery, full descriptions, project detail pages, blog, inbox, analytics |
 | Branches | All phases on `feat/admin-dashboard`, one commit per phase; unrelated fixes on their own branches |
 
-Hosting: Vercel (confirmed). Admin GitHub account: `Kimheang01`, id 172888373. Still open: media provider.
+Hosting: Vercel (confirmed). Admin GitHub account: `Kimheang01`, id 172888373. Media: Vercel Blob. Nothing open.
 
 ## Phases
 

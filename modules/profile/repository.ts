@@ -9,7 +9,7 @@ import type { ProfileData } from "./schema";
 export type AdminProfile = {
   name: string;
   email: string;
-  photo: string | null;
+  photoMediaId: number | null;
   translations: Record<Locale, ProfileData["translations"][Locale]>;
 };
 
@@ -26,7 +26,7 @@ const emptyText: ProfileData["translations"][Locale] = {
 
 export async function getProfile(): Promise<AdminProfile> {
   const row = await db.query.profile.findFirst({
-    with: { photo: { columns: { url: true } }, translations: true },
+    with: { translations: true },
   });
   const translations = Object.fromEntries(
     routing.locales.map((locale) => {
@@ -47,16 +47,17 @@ export async function getProfile(): Promise<AdminProfile> {
       ];
     }),
   ) as AdminProfile["translations"];
-  return { name: row?.name ?? "", email: row?.email ?? "", photo: row?.photo?.url ?? null, translations };
+  return { name: row?.name ?? "", email: row?.email ?? "", photoMediaId: row?.photoMediaId ?? null, translations };
 }
 
 export async function saveProfile(data: ProfileData) {
   await db.transaction(async (tx) => {
     // Creates the row on an empty database, otherwise updates it.
+    const values = { name: data.name, email: data.email, photoMediaId: data.photoMediaId };
     await tx
       .insert(profile)
-      .values({ id: 1, name: data.name, email: data.email })
-      .onConflictDoUpdate({ target: profile.id, set: { name: data.name, email: data.email } });
+      .values({ id: 1, ...values })
+      .onConflictDoUpdate({ target: profile.id, set: values });
     for (const locale of routing.locales) {
       const text = data.translations[locale];
       await tx

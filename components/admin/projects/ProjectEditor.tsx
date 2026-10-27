@@ -2,10 +2,12 @@
 
 import { startTransition, useActionState, useState } from "react";
 import { Field, LocaleTabs, StatusButtons, inputStyle, useFieldErrors } from "@/components/admin/form";
+import MediaPicker, { useMediaLibrary } from "@/components/admin/media/MediaPicker";
 import ProjectCard, { type ProjectCardLabels } from "@/components/ProjectCard";
 import { localeLabels, routing, type Locale } from "@/i18n/routing";
 import { toSlug } from "@/lib/slug";
 import type { ActionState } from "@/modules/admin/validation";
+import type { MediaItem } from "@/modules/media/schema";
 import {
   missingLocales,
   TRANSLATED_FIELDS,
@@ -17,8 +19,6 @@ import {
 export type EditorProject = Omit<ProjectInput, "status"> & {
   /** The saved status, which decides which buttons are shown */
   status: ProjectStatus | "new";
-  logo: string | null;
-  image: string | null;
 };
 
 type Action = (previous: ActionState, input: ProjectInput) => Promise<ActionState>;
@@ -38,13 +38,17 @@ export default function ProjectEditor({
   project,
   action,
   cardLabels,
+  media,
 }: {
   project: EditorProject;
   action: Action;
   /** The card's interface text per language; "{title}" is filled in here */
   cardLabels: Record<Locale, ProjectCardLabels>;
+  /** The media library, to choose the logo and screenshot from */
+  media: MediaItem[];
 }) {
-  const { status: savedStatus, logo, image, ...initial } = project;
+  const { status: savedStatus, ...initial } = project;
+  const library = useMediaLibrary(media);
   const [draft, setDraft] = useState(initial);
   const [locale, setLocale] = useState<Locale>(routing.defaultLocale);
   // New projects take their slug from the English title until it's edited.
@@ -79,8 +83,8 @@ export default function ProjectEditor({
     // A half-typed color would break the card's styles, so show grey instead.
     color: /^#[0-9a-fA-F]{6}$/.test(draft.color) ? draft.color : "#808080",
     monogram: draft.monogram.trim() || null,
-    logo,
-    image,
+    logo: library.find(draft.logoMediaId)?.url ?? null,
+    image: library.find(draft.imageMediaId)?.url ?? null,
     href: draft.href.trim() || null,
     repo: draft.repo.trim() || null,
     tags: draft.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
@@ -141,7 +145,7 @@ export default function ProjectEditor({
           </Field>
           <Field
             label="Monogram"
-            hint={logo ? "Not shown: the project has a logo." : "Up to 3 letters shown instead of a logo."}
+            hint={draft.logoMediaId ? "Not shown: the project has a logo." : "Up to 3 letters shown instead of a logo."}
             error={errors.monogram}
           >
             {(props) => (
@@ -164,6 +168,23 @@ export default function ProjectEditor({
               <input {...props} type="url" inputMode="url" className={inputStyle} value={draft.repo} placeholder="https://" onChange={(event) => set({ repo: event.target.value })} />
             )}
           </Field>
+          <MediaPicker
+            label="Logo"
+            hint="Square, on a white tile. Without one, the monogram is shown."
+            value={draft.logoMediaId}
+            onChange={(id) => set({ logoMediaId: id })}
+            library={library}
+            error={errors.logoMediaId}
+          />
+          <MediaPicker
+            label="Screenshot"
+            hint="Optional, shown 16:9 below the description."
+            value={draft.imageMediaId}
+            onChange={(id) => set({ imageMediaId: id })}
+            library={library}
+            error={errors.imageMediaId}
+            aspect="aspect-video"
+          />
         </fieldset>
 
         {/* The text, one language at a time */}

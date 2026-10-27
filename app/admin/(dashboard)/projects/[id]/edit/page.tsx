@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import ProjectEditor from "@/components/admin/projects/ProjectEditor";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { routing } from "@/i18n/routing";
+import { getMediaLibrary } from "@/modules/media/service";
 import { saveProject } from "@/modules/projects/actions";
 import { getCardLabels, toEditorProject } from "@/modules/projects/editor";
 import { getProject } from "@/modules/projects/service";
@@ -40,6 +41,7 @@ async function Editor({ params, searchParams }: PageProps<"/admin/projects/[id]/
         project={toEditorProject(project)}
         action={saveProject.bind(null, project.id)}
         cardLabels={await getCardLabels()}
+        media={await getMediaLibrary()}
       />
     </>
   );

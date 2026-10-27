@@ -17,19 +17,15 @@ export type AdminProject = {
   href: string | null;
   repo: string | null;
   tags: string[];
-  logo: string | null;
-  image: string | null;
+  logoMediaId: number | null;
+  imageMediaId: number | null;
   updatedAt: Date;
   translations: Record<Locale, ProjectText>;
 };
 
 const emptyText: ProjectText = { title: "", type: "", context: "", description: "" };
 
-const withRelations = {
-  logo: { columns: { url: true } },
-  image: { columns: { url: true } },
-  translations: true,
-} as const;
+const withRelations = { translations: true } as const;
 
 type Row = NonNullable<Awaited<ReturnType<typeof findRow>>>;
 
@@ -57,8 +53,8 @@ function toAdminProject(row: Row): AdminProject {
     href: row.href,
     repo: row.repo,
     tags: row.tags,
-    logo: row.logo?.url ?? null,
-    image: row.image?.url ?? null,
+    logoMediaId: row.logoMediaId,
+    imageMediaId: row.imageMediaId,
     updatedAt: row.updatedAt,
     translations,
   };
@@ -86,6 +82,8 @@ const projectColumns = (data: ProjectData) => ({
   href: data.href,
   repo: data.repo,
   tags: data.tags,
+  logoMediaId: data.logoMediaId,
+  imageMediaId: data.imageMediaId,
 });
 
 /** Adds a project at the end of the list. Returns its id. */

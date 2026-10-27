@@ -28,8 +28,9 @@ yarn dev                     # http://localhost:3000
 2. **Interface text** — headings, labels and buttons are in
    `messages/en.json` (English) and `messages/km.json` (Khmer). See
    [Languages](#languages).
-3. **Images** — files in `public/` are listed in the `media` table; a
-   project's logo and screenshot and the profile photo point to a row there.
+3. **Images** — upload them in the admin (Media, or the image fields on the
+   Profile and project pages). They're stored in Vercel Blob; the site's
+   original images in `public/` are in the same library.
 4. **Colors** — the dark/light palettes and accent presets are in
    `lib/theme.ts`.
 
@@ -45,6 +46,10 @@ settings → OAuth Apps → New OAuth App) with the callback URL
 section of `.env.local` (see `.env.example`) and run `yarn db:migrate`. For
 production, create a second OAuth app with your domain's callback URL and set
 the same variables on Vercel.
+
+Image uploads need a Vercel Blob store: in the Vercel project, Storage →
+Create → Blob, connected to every environment. Vercel adds
+`BLOB_READ_WRITE_TOKEN` itself; for local uploads, copy it into `.env.local`.
 
 ## Languages
 

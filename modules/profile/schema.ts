@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { routing, type Locale } from "@/i18n/routing";
 import { lines, perLocale, required } from "@/modules/admin/validation";
+import { mediaId } from "@/modules/media/schema";
 
 const atLeastOne = <T,>(list: T[]) => list.length > 0;
 
@@ -32,6 +33,8 @@ const profileText = z.object({
 export const profileInput = z.object({
   name: required(80),
   email: z.string().trim().pipe(z.email("Use a valid email address.").max(120)),
+  /** From the media library */
+  photoMediaId: mediaId,
   translations: perLocale(profileText),
 });
 

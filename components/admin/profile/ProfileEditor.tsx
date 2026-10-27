@@ -1,10 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { startTransition, useActionState, useState } from "react";
 import { cardStyle, Field, inputStyle, LocaleTabs, MoveButtons, SaveBar, useFieldErrors } from "@/components/admin/form";
+import MediaPicker, { useMediaLibrary } from "@/components/admin/media/MediaPicker";
 import { routing, type Locale } from "@/i18n/routing";
 import type { ActionState } from "@/modules/admin/validation";
+import type { MediaItem } from "@/modules/media/schema";
 import { missingLocales, type ProfileInput, type ProfileText } from "@/modules/profile/schema";
 
 type Action = (previous: ActionState, input: ProfileInput) => Promise<ActionState>;
@@ -12,21 +13,23 @@ type Action = (previous: ActionState, input: ProfileInput) => Promise<ActionStat
 /** The profile: who you are, the hero text and the About section, per language. */
 export default function ProfileEditor({
   profile,
-  photo,
+  media,
   action,
 }: {
   profile: ProfileInput;
-  photo: string | null;
+  /** The media library, to choose the photo from */
+  media: MediaItem[];
   action: Action;
 }) {
   const [draft, setDraft] = useState(profile);
+  const library = useMediaLibrary(media);
   const [locale, setLocale] = useState<Locale>(routing.defaultLocale);
   const [state, dispatch, pending] = useActionState(action, null);
   const { errors, markEdited, reset } = useFieldErrors(state);
   const text = draft.translations[locale];
   const at = (field: string) => `translations.${locale}.${field}`;
 
-  const set = (changes: Partial<Pick<ProfileInput, "name" | "email">>) => {
+  const set = (changes: Partial<Pick<ProfileInput, "name" | "email" | "photoMediaId">>) => {
     Object.keys(changes).forEach(markEdited);
     setDraft((d) => ({ ...d, ...changes }));
   };
@@ -76,15 +79,17 @@ export default function ProfileEditor({
       }}
       className="max-w-3xl space-y-8"
     >
-      <fieldset className={`${cardStyle} grid gap-5 p-5 sm:grid-cols-[8rem_minmax(0,1fr)]`}>
+      <fieldset className={`${cardStyle} grid gap-5 p-5`}>
         <legend className="sr-only">You</legend>
-        <div className="row-span-2">
-          <p className="mb-1.5 text-sm font-medium">Photo</p>
-          <div className="relative aspect-[4/5] w-32 overflow-hidden rounded-xl border border-line bg-background">
-            {photo && <Image src={photo} alt="" fill sizes="128px" className="object-cover" />}
-          </div>
-          <p className="mt-1 text-xs text-muted">Uploading a new photo isn&apos;t available yet.</p>
-        </div>
+        <MediaPicker
+          label="Photo"
+          hint="Shown in the About section, cropped to 4:5 (portrait)."
+          value={draft.photoMediaId}
+          onChange={(id) => set({ photoMediaId: id })}
+          library={library}
+          error={errors.photoMediaId}
+          aspect="aspect-[4/5]"
+        />
         <Field label="Name" error={errors.name}>
           {(props) => <input {...props} className={inputStyle} value={draft.name} onChange={(event) => set({ name: event.target.value })} />}
         </Field>
