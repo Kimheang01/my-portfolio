@@ -6,6 +6,7 @@
 import { refresh, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { logAdminChange } from "@/lib/audit";
 import { requireAdmin } from "@/lib/authorization";
 import { PORTFOLIO_TAG } from "@/modules/portfolio/public";
 import { invalid, type ActionState } from "@/modules/admin/validation";
@@ -34,6 +35,7 @@ export async function saveProject(
 
   const result = await service.saveProject(parsedId?.data ?? null, parsed.data);
   if (!result.ok) return result;
+  logAdminChange("project.save", { id: result.id, status: parsed.data.status });
 
   updateTag(PORTFOLIO_TAG);
   if (id === null) redirect(`/admin/projects/${result.id}/edit?created=1`);
@@ -46,6 +48,7 @@ export async function moveProject(id: number, direction: "up" | "down") {
   const parsedId = projectId.parse(id);
   const parsedDirection = z.enum(["up", "down"]).parse(direction);
   if (await service.moveProject(parsedId, parsedDirection)) {
+    logAdminChange("project.move", { id: parsedId, direction: parsedDirection });
     updateTag(PORTFOLIO_TAG);
     refresh();
   }

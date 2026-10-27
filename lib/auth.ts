@@ -31,6 +31,9 @@ function createAuth() {
         clientSecret: requiredEnv("GITHUB_CLIENT_SECRET"),
       },
     },
+    // The site never uses the GitHub tokens Better Auth keeps, but if the
+    // database leaked they'd still be encrypted.
+    account: { encryptOAuthTokens: true },
     user: {
       // Runs on every GitHub sign-in, before a user, account or session is
       // saved. Any other account is turned away here, so it's never stored.

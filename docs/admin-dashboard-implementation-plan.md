@@ -15,7 +15,7 @@ this plan wins: it reflects how the existing code actually works.
 | 4 | Projects end to end | Done |
 | 5 | Other content | Done |
 | 6 | Media | Done |
-| 7 | Hardening | Not started |
+| 7 | Hardening | Done |
 
 Update this table whenever a phase starts, finishes or is approved.
 

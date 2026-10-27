@@ -59,15 +59,22 @@ is reported as failing, with the error, never smoothed over.
 | TypeScript | `yarn -s tsc --noEmit` | Always |
 | Lint | `yarn -s lint` | Always |
 | Translations | `yarn -s i18n:check` | Always |
+| Unit tests | `yarn -s test` | Always; add tests for new form rules in `tests/unit/` |
 | Build | `yarn -s build` | Always. From Phase 2 on it needs a reachable `DATABASE_URL` |
 | Database | `bash .claude/skills/admin-phase/scripts/check-db.sh` | When `db/`, `drizzle/` or `scripts/seed.ts` changed |
 | Routes | `bash .claude/skills/admin-phase/scripts/smoke-test.sh [extra checks]` | Always, after the build |
+| End-to-end | `yarn -s test:e2e` | When admin screens, actions, auth or public reads change |
 
 - `check-db.sh` migrates and seeds twice against a throwaway in-memory
   Postgres (PGlite). It passes when the second seed prints `Added: nothing.`
   When the phase changes what the seed writes, also query the result (row
   counts, a Khmer value) the way Phase 1 did, and try a few writes the
   database should reject.
+- `yarn test:e2e` (Playwright, `tests/e2e/`) starts its own site on a
+  throwaway database and builds into `.next-e2e`, so it never reads or
+  changes a real database or the real `.next` build. Any other test server
+  against a test database must also build into its own folder
+  (`NEXT_DIST_DIR`), or pages it regenerates end up in `.next`.
 - `smoke-test.sh` covers the public routes. Pass extra checks for routes the
   phase adds, e.g. `"/admin 307 /admin/login"` once Phase 3 exists.
 - If the phase changes anything visitors see (Phase 2 especially), compare

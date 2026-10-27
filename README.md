@@ -117,12 +117,62 @@ scripts/            seed (and its content in seed-data/), frame generators,
 public/             images and hero frames
 ```
 
+## Tests
+
+```bash
+yarn test       # the admin's form rules (Node's test runner, a few seconds)
+yarn test:e2e   # signs in, publishes a project and checks the site (Playwright)
+```
+
+`yarn test:e2e` starts its own copy of the site on a throwaway in-memory
+database (PGlite) and builds it into `.next-e2e`, so it never touches your
+database or your normal build. It uses the Google Chrome on your computer;
+without Chrome, run `npx playwright install chromium` and
+`PW_CHANNEL=chromium yarn test:e2e`.
+
 ## Deploying
 
-Push to GitHub and import the repo on [Vercel](https://vercel.com/new), and
-set `DATABASE_URL` in the project's environment variables: the pages are
-built from the database, so the build needs it. Add the admin login
-variables from `.env.example` too, with `BETTER_AUTH_URL` set to your domain. Canonical URLs, hreflang
-links and the sitemap use your Vercel production domain. With a custom domain, set
-`NEXT_PUBLIC_SITE_URL` (e.g. `https://example.com`) in the Vercel project
-settings.
+Push to GitHub and import the repo on [Vercel](https://vercel.com/new). The
+pages are built from the database, so every build needs `DATABASE_URL`.
+Canonical URLs, hreflang links and the sitemap use your Vercel production
+domain; with a custom domain, set `NEXT_PUBLIC_SITE_URL` (e.g.
+`https://example.com`).
+
+### Before the admin goes live
+
+1. **A production GitHub OAuth app.** The local one only allows
+   `localhost`. Create another with Homepage URL `https://<your domain>` and
+   callback URL `https://<your domain>/api/auth/callback/github`.
+2. **Production environment variables on Vercel** (Settings → Environment
+   Variables, Production):
+   - `BETTER_AUTH_URL` = `https://<your domain>`
+   - `BETTER_AUTH_SECRET` = a new random value (`openssl rand -base64 32`),
+     not the one in `.env.local`
+   - `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` from the production OAuth app
+   - `ADMIN_GITHUB_ID` (your GitHub account's numeric id)
+   - `DATABASE_URL` and `BLOB_READ_WRITE_TOKEN` (already set if you followed
+     the steps above)
+
+   Preview deployments get their own addresses, which the OAuth app doesn't
+   allow, so the admin login only works in production. The public site works
+   everywhere.
+3. **Migrations before the deploy that needs them.** Run `yarn db:migrate`
+   against the production database first. Make a backup right before: in
+   Neon, create a branch of the database (it's an instant copy); to undo,
+   restore from that branch.
+4. **After deploying:** open `/en` and `/km`, sign in at `/admin`, change
+   something small and check it appears on the site.
+
+### A separate database for development
+
+Your computer and the live site should not share a database: anything you
+try locally would show on the live site. In Neon, create a `dev` branch of
+the database and put its connection string in `.env.local`; keep the main
+branch's in Vercel's production settings. Run `yarn db:migrate` on both when
+a new migration is added.
+
+### Logs
+
+Every change made in the admin is written to the server log as one line
+like `{"event":"admin_change","action":"project.save","id":5,...}`. On Vercel,
+search the project's Logs for `admin_change`.

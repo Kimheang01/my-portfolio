@@ -10,16 +10,10 @@ set -euo pipefail
 
 port="${1:-54329}"
 project="$(git rev-parse --show-toplevel)"
-tools="${TMPDIR:-/tmp}/admin-phase-pglite"
-
-if [ ! -x "$tools/node_modules/.bin/pglite-server" ]; then
-  echo "Installing PGlite into $tools (one time)…"
-  mkdir -p "$tools"
-  (cd "$tools" && npm init -y >/dev/null && npm install --silent @electric-sql/pglite @electric-sql/pglite-socket)
-fi
 
 log="$(mktemp)"
-"$tools/node_modules/.bin/pglite-server" --port="$port" >"$log" 2>&1 &
+# PGlite is a development dependency of the project (yarn installs it).
+"$project/node_modules/.bin/pglite-server" --port="$port" >"$log" 2>&1 &
 server=$!
 # The server doesn't stop on its own, so always stop it on the way out.
 trap 'kill "$server" 2>/dev/null; rm -f "$log"' EXIT

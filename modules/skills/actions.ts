@@ -5,6 +5,7 @@
 import { refresh, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { logAdminChange } from "@/lib/audit";
 import { requireAdmin } from "@/lib/authorization";
 import { invalid, type ActionState } from "@/modules/admin/validation";
 import { PORTFOLIO_TAG } from "@/modules/portfolio/public";
@@ -27,6 +28,7 @@ export async function saveSkillGroup(
 
   const savedId = await service.saveSkillGroup(parsedId?.data ?? null, parsed.data);
   if (savedId === null) return { ok: false, message: "This group no longer exists." };
+  logAdminChange("skills.save", { id: savedId });
 
   updateTag(PORTFOLIO_TAG);
   if (id === null) redirect(`/admin/skills/${savedId}/edit?created=1`);
@@ -36,7 +38,11 @@ export async function saveSkillGroup(
 
 export async function deleteSkillGroup(id: number) {
   await requireAdmin();
-  if (await service.deleteSkillGroup(groupId.parse(id))) updateTag(PORTFOLIO_TAG);
+  const parsedId = groupId.parse(id);
+  if (await service.deleteSkillGroup(parsedId)) {
+    logAdminChange("skills.delete", { id: parsedId });
+    updateTag(PORTFOLIO_TAG);
+  }
   redirect("/admin/skills");
 }
 
@@ -45,6 +51,7 @@ export async function moveSkillGroup(id: number, direction: "up" | "down") {
   const parsedId = groupId.parse(id);
   const parsedDirection = z.enum(["up", "down"]).parse(direction);
   if (await service.moveSkillGroup(parsedId, parsedDirection)) {
+    logAdminChange("skills.move", { id: parsedId, direction: parsedDirection });
     updateTag(PORTFOLIO_TAG);
     refresh();
   }
