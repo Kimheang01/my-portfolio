@@ -1,3 +1,4 @@
+import { getSessionCookie } from "better-auth/cookies";
 import { hasLocale } from "next-intl";
 import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
@@ -12,7 +13,22 @@ const handleI18nRouting = createMiddleware(routing);
 const sectionPath = new RegExp(`^/(?:(${routing.locales.join("|")})/)?(${SECTIONS.join("|")})/?$`);
 
 export default function proxy(request: NextRequest) {
-  const section = request.nextUrl.pathname.match(sectionPath);
+  const { pathname } = request.nextUrl;
+
+  // The admin has no language prefix. Opening an admin page without a
+  // session cookie goes straight to the login page; whether the session is
+  // valid, and the admin's, is checked on the server by requireAdmin()
+  // (lib/authorization.ts). Only page loads are redirected: a server action
+  // (a POST) sent here would fail, so it goes on to its own requireAdmin().
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    const pageLoad = request.method === "GET" || request.method === "HEAD";
+    if (pageLoad && pathname !== "/admin/login" && !getSessionCookie(request)) {
+      return NextResponse.redirect(new URL("/admin/login", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  const section = pathname.match(sectionPath);
   if (section) {
     const requested = section[1] ?? request.cookies.get(LOCALE_COOKIE)?.value;
     const url = request.nextUrl.clone();

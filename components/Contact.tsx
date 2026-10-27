@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { site } from "@/content/site";
+import type { Social } from "@/modules/portfolio/types";
 import CopyEmailButton from "./CopyEmailButton";
 import Reveal from "./Reveal";
 import SocialIcon from "./SocialIcon";
@@ -51,10 +51,16 @@ function ChannelRow({
   );
 }
 
-export default function Contact() {
+export default function Contact({
+  email,
+  location,
+  socials,
+}: {
+  email: string;
+  location: string;
+  socials: Social[];
+}) {
   const t = useTranslations("Contact");
-  const tCommon = useTranslations("Common");
-  const socials = site.socials.filter((social) => social.href);
 
   return (
     <section id="contact" className="mx-auto max-w-6xl px-6 py-20 sm:py-28 lg:py-32">
@@ -74,14 +80,14 @@ export default function Contact() {
 
               <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
                 <a
-                  href={`mailto:${site.email}`}
+                  href={`mailto:${email}`}
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition hover:bg-accent active:bg-accent"
                 >
                   <MailIcon />
                   {t("emailMe")}
                 </a>
                 <CopyEmailButton
-                  email={site.email}
+                  email={email}
                   labels={{ copy: t("copyEmail"), copied: t("copied"), failed: t("copyFailed") }}
                 />
               </div>
@@ -91,25 +97,25 @@ export default function Contact() {
                   <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
-                {t("basedIn", { location: tCommon("location") })}
+                {t("basedIn", { location })}
               </p>
             </div>
 
             <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-background/50 backdrop-blur">
               <ChannelRow
-                href={`mailto:${site.email}`}
+                href={`mailto:${email}`}
                 icon={<MailIcon />}
                 label={t("email")}
-                value={site.email}
+                value={email}
                 external={false}
               />
               {socials.map((social) => (
                 <ChannelRow
-                  key={social.label}
+                  key={social.platform}
                   href={social.href}
-                  icon={<SocialIcon label={social.label} />}
-                  label={social.label}
-                  value={social.handle ?? social.label}
+                  icon={<SocialIcon platform={social.platform} />}
+                  label={social.platform}
+                  value={social.handle ?? social.platform}
                 />
               ))}
             </ul>

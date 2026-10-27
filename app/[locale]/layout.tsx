@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations } from "next-intl/server";
-import { notFound } from "next/navigation";
-import { locale as localeParam } from "next/root-params";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 import "lenis/dist/lenis.css";
 import "../globals.css";
 import InlineScript from "@/components/InlineScript";
@@ -10,21 +8,16 @@ import MotionProvider from "@/components/MotionProvider";
 import NeonRibbonCursor from "@/components/NeonRibbonCursor";
 import SmoothScroll from "@/components/SmoothScroll";
 import ThemeSync from "@/components/ThemeSync";
-import { site } from "@/content/site";
-import { ogLocales, routing, type Locale } from "@/i18n/routing";
+import { getLocale } from "@/i18n/locale";
+import { ogLocales, routing } from "@/i18n/routing";
 import { fontVariables } from "@/lib/fonts";
 import { siteUrl } from "@/lib/site-url";
 import { DEFAULT_ACCENT, DEFAULT_MODE, PALETTES, themeCss, themeInitScript } from "@/lib/theme";
+import { getPortfolio } from "@/modules/portfolio/public";
 
 // Translations used by Client Components. Everything else is translated on
 // the server, so its text never ships to the browser as JavaScript.
 const CLIENT_NAMESPACES = ["Nav", "Language", "Theme", "Hero"] as const;
-
-async function getLocale(): Promise<Locale> {
-  const locale = await localeParam();
-  if (!hasLocale(routing.locales, locale)) notFound();
-  return locale;
-}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -32,22 +25,22 @@ export function generateStaticParams() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
-  const t = await getTranslations("Metadata");
+  const { profile, seo } = await getPortfolio(locale);
   const languages = Object.fromEntries(routing.locales.map((l) => [l, `/${l}`]));
 
   return {
     metadataBase: siteUrl,
-    title: t("title"),
-    description: t("description"),
+    title: seo.title,
+    description: seo.description,
     alternates: {
       canonical: `/${locale}`,
       languages: { ...languages, "x-default": `/${routing.defaultLocale}` },
     },
     openGraph: {
       type: "website",
-      siteName: site.name,
-      title: t("title"),
-      description: t("description"),
+      siteName: profile.name,
+      title: seo.title,
+      description: seo.description,
       url: `/${locale}`,
       locale: ogLocales[locale],
       alternateLocale: routing.locales.filter((l) => l !== locale).map((l) => ogLocales[l]),
