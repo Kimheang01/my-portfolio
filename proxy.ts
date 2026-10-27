@@ -3,12 +3,14 @@ import { hasLocale } from "next-intl";
 import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { LOCALE_COOKIE, routing } from "./i18n/routing";
+import { SECTIONS } from "./lib/sections";
 
 const handleI18nRouting = createMiddleware(routing);
 
 // The portfolio is a single page, so section URLs like /km/projects open the
-// page at that section instead.
-const sectionPath = /^\/(?:([a-z]{2})\/)?(about|experience|projects|contact)\/?$/;
+// page at that section instead. Only supported languages count, so
+// /fr/projects ends on the 404 page rather than on the English site.
+const sectionPath = new RegExp(`^/(?:(${routing.locales.join("|")})/)?(${SECTIONS.join("|")})/?$`);
 
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

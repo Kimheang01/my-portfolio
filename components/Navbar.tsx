@@ -3,16 +3,12 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { SECTIONS } from "@/lib/sections";
 import { LanguageMenu, LanguageToggle } from "./LanguageSwitcher";
 import ThemeSwitcher, { ThemeControls } from "./ThemeSwitcher";
 
 // Section anchors on the page; labels are translated under Nav.
-const links = [
-  { href: "#about", key: "about" },
-  { href: "#experience", key: "experience" },
-  { href: "#projects", key: "projects" },
-  { href: "#contact", key: "contact" },
-] as const;
+const links = SECTIONS.map((key) => ({ href: `#${key}`, key }));
 
 const ease = [0.22, 1, 0.36, 1] as const;
 

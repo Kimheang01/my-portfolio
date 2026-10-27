@@ -89,15 +89,13 @@ function useSwitchLocale(onSwitch?: () => void) {
   }, [current]);
 
   const switchTo = (event: React.MouseEvent, locale: Locale) => {
-    onSwitch?.();
-    if (locale === current) {
-      event.preventDefault();
-      return;
-    }
-    // Let modified clicks (new tab, etc.) behave like a normal link.
+    // Let modified clicks (new tab, etc.) behave like a normal link, and
+    // leave this tab's menu as it is.
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
       return;
+    onSwitch?.();
     event.preventDefault();
+    if (locale === current) return;
     const { search, hash } = window.location;
     pendingRestore = { spot: captureSpot(), scrollY: window.scrollY };
     startTransition(() => {
