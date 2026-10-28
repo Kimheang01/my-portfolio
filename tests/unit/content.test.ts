@@ -77,6 +77,7 @@ describe("skill group form", () => {
 
 describe("profile form", () => {
   const text = {
+    name: "Hen",
     role: "Dev",
     location: "PP",
     heroRoles: [{ first: "Full-Stack", second: "Developer" }],
@@ -86,13 +87,14 @@ describe("profile form", () => {
     aboutParagraphs: "One.\n\nTwo.\n \nThree.",
     spokenLanguages: "Khmer\nEnglish",
   };
-  const profile = { name: "Hen", email: "a@b.co", photoMediaId: null, translations: { en: text, km: text } };
+  const profile = { email: "a@b.co", photoMediaId: null, translations: { en: text, km: text } };
   const check = (change: object) => rejected(profileInput, { ...profile, ...change });
   const inKm = (change: object) => check({ translations: { en: text, km: { ...text, ...change } } });
 
   test("every text is required in every language", () => {
     assert.deepEqual(check({}), []);
     assert.deepEqual(check({ email: "not-an-email" }), ["email"]);
+    assert.deepEqual(inKm({ name: "" }), ["translations.km.name"]);
     assert.deepEqual(inKm({ role: "" }), ["translations.km.role"]);
     assert.deepEqual(inKm({ heroRoles: [] }), ["translations.km.heroRoles"]);
     assert.deepEqual(inKm({ heroRoles: [{ first: "A", second: " " }] }), ["translations.km.heroRoles.0.second"]);

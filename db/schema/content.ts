@@ -53,7 +53,6 @@ export const profile = pgTable(
   "profile",
   {
     id: integer().primaryKey().default(1),
-    name: text().notNull(),
     email: text().notNull(),
     photoMediaId: integer().references(() => media.id, { onDelete: "set null" }),
     ...timestamps,
@@ -70,6 +69,7 @@ export const profileTranslations = pgTable(
       .notNull()
       .references(() => profile.id, { onDelete: "cascade" }),
     locale: locale(),
+    name: translatedText(),
     role: translatedText(),
     location: translatedText(),
     /** The rotating headline in the hero, e.g. "Full-Stack" / "Developer" */

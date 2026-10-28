@@ -10,6 +10,7 @@ const atLeastOne = <T,>(list: T[]) => list.length > 0;
 const heroRole = z.object({ first: required(30), second: required(30) });
 
 const profileText = z.object({
+  name: required(80),
   role: required(60),
   location: required(80),
   /** The rotating headline; the first one is also the page's <h1> */
@@ -31,7 +32,6 @@ const profileText = z.object({
 });
 
 export const profileInput = z.object({
-  name: required(80),
   email: z.string().trim().pipe(z.email("Use a valid email address.").max(120)),
   /** From the media library */
   photoMediaId: mediaId,
@@ -46,7 +46,7 @@ export type ProfileText = ProfileInput["translations"][Locale];
 export function missingLocales(translations: Record<Locale, ProfileText>): Locale[] {
   return routing.locales.filter((locale) => {
     const t = translations[locale];
-    const texts = [t.role, t.location, t.heroIntroHeading, t.heroIntroText, t.heroStatement, t.aboutParagraphs, t.spokenLanguages];
+    const texts = [t.name, t.role, t.location, t.heroIntroHeading, t.heroIntroText, t.heroStatement, t.aboutParagraphs, t.spokenLanguages];
     return (
       texts.some((value) => !value.trim()) ||
       !t.heroRoles.length ||
