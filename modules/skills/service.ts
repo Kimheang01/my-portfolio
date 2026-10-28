@@ -5,7 +5,6 @@ import { requireAdmin } from "@/lib/authorization";
 import * as repository from "./repository";
 import type { SkillGroupData } from "./schema";
 
-export type { AdminSkillGroup } from "./repository";
 
 export async function getSkillGroups() {
   await requireAdmin();
