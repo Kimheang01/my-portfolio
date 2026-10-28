@@ -29,7 +29,7 @@ export default function ProfileEditor({
   const text = draft.translations[locale];
   const at = (field: string) => `translations.${locale}.${field}`;
 
-  const set = (changes: Partial<Pick<ProfileInput, "name" | "email" | "photoMediaId">>) => {
+  const set = (changes: Partial<Pick<ProfileInput, "email" | "photoMediaId">>) => {
     Object.keys(changes).forEach(markEdited);
     setDraft((d) => ({ ...d, ...changes }));
   };
@@ -46,7 +46,7 @@ export default function ProfileEditor({
     setText("heroRoles", next);
   };
 
-  const textField = (field: "role" | "location" | "heroIntroHeading", label: string, hint?: string) => (
+  const textField = (field: "name" | "role" | "location" | "heroIntroHeading", label: string, hint?: string) => (
     <Field label={label} hint={hint} error={errors[at(field)]}>
       {(props) => <input {...props} className={inputStyle} value={text[field]} onChange={(event) => setText(field, event.target.value)} />}
     </Field>
@@ -90,9 +90,6 @@ export default function ProfileEditor({
           error={errors.photoMediaId}
           aspect="aspect-[4/5]"
         />
-        <Field label="Name" error={errors.name}>
-          {(props) => <input {...props} className={inputStyle} value={draft.name} onChange={(event) => set({ name: event.target.value })} />}
-        </Field>
         <Field label="Email" hint="Shown in the Contact section." error={errors.email}>
           {(props) => (
             <input {...props} type="email" className={inputStyle} value={draft.email} onChange={(event) => set({ email: event.target.value })} />
@@ -101,6 +98,8 @@ export default function ProfileEditor({
       </fieldset>
 
       <LocaleTabs locale={locale} onChange={setLocale} missing={missingLocales(draft.translations)}>
+        {textField("name", "Name", "Shown in the navigation, hero, About and footer.")}
+
         <div className="grid gap-5 sm:grid-cols-2">
           {textField("role", "Role", "e.g. Full-Stack Developer")}
           {textField("location", "Location", "e.g. Phnom Penh, Cambodia")}

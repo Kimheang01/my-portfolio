@@ -24,7 +24,7 @@ async function Editor() {
 
   return (
     <ProfileEditor
-      profile={{ name: profile.name, email: profile.email, photoMediaId: profile.photoMediaId, translations }}
+      profile={{ email: profile.email, photoMediaId: profile.photoMediaId, translations }}
       media={media}
       action={saveProfile}
     />

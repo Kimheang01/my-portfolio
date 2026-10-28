@@ -7,13 +7,13 @@ import { routing, type Locale } from "@/i18n/routing";
 import type { ProfileData } from "./schema";
 
 export type AdminProfile = {
-  name: string;
   email: string;
   photoMediaId: number | null;
   translations: Record<Locale, ProfileData["translations"][Locale]>;
 };
 
 const emptyText: ProfileData["translations"][Locale] = {
+  name: "",
   role: "",
   location: "",
   heroRoles: [],
@@ -35,6 +35,7 @@ export async function getProfile(): Promise<AdminProfile> {
       return [
         locale,
         {
+          name: t.name,
           role: t.role,
           location: t.location,
           heroRoles: t.heroRoles,
@@ -47,13 +48,13 @@ export async function getProfile(): Promise<AdminProfile> {
       ];
     }),
   ) as AdminProfile["translations"];
-  return { name: row?.name ?? "", email: row?.email ?? "", photoMediaId: row?.photoMediaId ?? null, translations };
+  return { email: row?.email ?? "", photoMediaId: row?.photoMediaId ?? null, translations };
 }
 
 export async function saveProfile(data: ProfileData) {
   await db.transaction(async (tx) => {
     // Creates the row on an empty database, otherwise updates it.
-    const values = { name: data.name, email: data.email, photoMediaId: data.photoMediaId };
+    const values = { email: data.email, photoMediaId: data.photoMediaId };
     await tx
       .insert(profile)
       .values({ id: 1, ...values })

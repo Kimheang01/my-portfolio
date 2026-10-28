@@ -37,7 +37,6 @@ export type Job = {
 export type SkillGroup = "frontend" | "backend" | "mobile" | "databases" | "tools";
 
 export const site = {
-  name: "Hen Kimheang",
   email: "skimheang63@gmail.com",
   photo: "/images/profile-about.jpg",
   // Shown as icons in the footer and as links in the Contact section.

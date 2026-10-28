@@ -61,7 +61,6 @@ async function seed(db: Database, added: Tally, kept: Tally) {
     if ((await tx.select().from(t.profile)).length) count(kept, "profile");
     else {
       await tx.insert(t.profile).values({
-        name: site.name,
         email: site.email,
         photoMediaId: await localMedia(site.photo),
       });
@@ -71,6 +70,7 @@ async function seed(db: Database, added: Tally, kept: Tally) {
           return {
             profileId: 1,
             locale,
+            name: m.Common.name,
             role: m.Common.role,
             location: m.Common.location,
             heroRoles: m.Hero.roles,

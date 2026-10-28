@@ -67,7 +67,7 @@ export async function getPortfolio(locale: Locale): Promise<Portfolio> {
   // Items without text in this language are left out rather than shown blank.
   return {
     profile: {
-      name: profile.name,
+      name: profileText.name,
       email: profile.email,
       photo: profile.photo?.url ?? null,
       role: profileText.role,

@@ -6,7 +6,6 @@ import { requireAdmin } from "@/lib/authorization";
 import * as repository from "./repository";
 import type { ProfileData } from "./schema";
 
-export type { AdminProfile } from "./repository";
 
 export async function getProfile() {
   await requireAdmin();

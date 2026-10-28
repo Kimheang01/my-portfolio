@@ -5,7 +5,6 @@ import { requireAdmin } from "@/lib/authorization";
 import * as repository from "./repository";
 import type { SettingsData } from "./schema";
 
-export type { AdminSettings } from "./repository";
 
 export async function getSettings() {
   await requireAdmin();

@@ -32,7 +32,7 @@ Open it (`open -e .env.local`) and fill in these seven values. Each line is
 | `DATABASE_URL` | Neon → project **my-portfolio** → branch **dev** → **Connect** → Connection string (pooling on). Use the **dev** branch, never **production**: anything you try locally then stays off the live site. |
 | `BETTER_AUTH_URL` | `http://localhost:3000` (already filled in). |
 | `BETTER_AUTH_SECRET` | A new random value: `openssl rand -base64 32 \| tr -d '\n' \| pbcopy`, then paste. |
-| `ADMIN_GITHUB_ID` | `172888373`, the GitHub account allowed into `/admin`. |
+| `ADMIN_GITHUB_ID` | e.g`172888000`, the GitHub account allowed into `/admin`. |
 | `GITHUB_CLIENT_ID` | GitHub → Settings → Developer settings → OAuth Apps → **Portfolio admin (local)** → Client ID. |
 | `GITHUB_CLIENT_SECRET` | The same app → **Generate a new client secret**. An old secret can't be shown again, but it keeps working where it's already used. |
 | `BLOB_READ_WRITE_TOKEN` | Vercel → project **heang-portfolio** → Settings → Environment Variables → `BLOB_READ_WRITE_TOKEN` → 👁 → copy. It starts with `vercel_blob_rw_`. |

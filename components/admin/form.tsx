@@ -113,7 +113,7 @@ const buttonStyle = (primary?: boolean) =>
   }`;
 
 /** The result of the last save, read out to screen readers. */
-export function SaveMessage({ state, pending }: { state: ActionState; pending: boolean }) {
+function SaveMessage({ state, pending }: { state: ActionState; pending: boolean }) {
   return (
     <p role="status" className={`basis-full text-sm ${state?.ok ? "text-emerald-400" : "text-rose-400"}`}>
       {pending ? <span className="text-muted">Saving…</span> : state?.message}
